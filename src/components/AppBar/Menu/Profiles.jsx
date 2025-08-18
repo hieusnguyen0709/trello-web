@@ -32,7 +32,7 @@ function Profiles() {
             aria-expanded={open ? 'true' : undefined}
           >
             <Avatar 
-                sx={{ width: 30, height: 30 }} 
+                sx={{ width: 34, height: 34 }} 
                 alt="HieuNM"
                 src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRknnc4OqRgNtBh8jwv-wY4dpK-YZ8AHDMktRa85N4YD2wp-zhQvYavkyKPtCZtC48DLrw&usqp=CAU"
             />
