@@ -11,9 +11,9 @@ import {
   DragOverlay,
   defaultDropAnimationSideEffects,
   closestCorners,
-  closestCenter,
+  // closestCenter,
   pointerWithin,
-  rectIntersection,
+  // rectIntersection,
   getFirstCollision
 } from '@dnd-kit/core';
 import { useEffect, useState, useCallback, useRef } from 'react';
@@ -270,32 +270,38 @@ function BoardContent({ board }) {
     // Các điểm giao nhau - va chạm - intersections với con trỏ
     const pointerIntersecsions = pointerWithin(args);
 
-    // Thuật toán phát hiện va chạm sẽ trả về một mảng va chạm ở đây
-    const intersections = !!pointerIntersecsions?.length
-      ? pointerIntersecsions
-      : rectIntersection(args);
-    
-      let overId = getFirstCollision(intersections, 'id');
-      if (overId) {
-        // Nếu cái over nó là column thì sẽ tìm tới cardId gần nhất bên trong khu vực đó dựa vào thuật toán phát hiện va chạm closestCenter/closestCorners
-        const checkColumn = orderedColumns.find(column => column._id === overId);
-        if (checkColumn) {
-          // console.log('Before: ', overId);
-          overId = closestCenter({
-            ...args,
-            droppableContainers: args.droppableContainers.filter(container => {
-              return (container.id !== overId) && (checkColumn?.cardOrderIds.includes(container.id))
-            })
-          })[0]?.id
-          // console.log('After: ', overId);
-        }
+    // Nếu pointerIntersecsions là mảng rỗng, return luôn và không làm gì hết.
+    // Fix triệt để cái bug flickering của thư viện Dnd-kit trong trường hợp sau:
+    // Kéo một card có image cover lớn và kéo lên phía trên cùng ra khỏi khu vực kéo thả
+    if (!pointerIntersecsions?.length) return;
 
-        lastOverId.current = overId;
-        return [{ id: overId }]
+    // Thuật toán phát hiện va chạm sẽ trả về một mảng va chạm ở đây
+    // const intersections = !!pointerIntersecsions?.length
+    //   ? pointerIntersecsions
+    //   : rectIntersection(args);
+
+    // Tìm overId đầu tiên trong đám pointerIntersecsions ở trên
+    let overId = getFirstCollision(pointerIntersecsions, 'id');
+    if (overId) {
+      // Nếu cái over nó là column thì sẽ tìm tới cardId gần nhất bên trong khu vực đó dựa vào thuật toán phát hiện va chạm closestCenter/closestCorners
+      const checkColumn = orderedColumns.find(column => column._id === overId);
+      if (checkColumn) {
+        // console.log('Before: ', overId);
+        overId = closestCorners({
+          ...args,
+          droppableContainers: args.droppableContainers.filter(container => {
+            return (container.id !== overId) && (checkColumn?.cardOrderIds.includes(container.id))
+          })
+        })[0]?.id
+        // console.log('After: ', overId);
       }
 
-      // Nếu overId là null thì trả về mảng rỗng - tránh bug crash trang
-      return lastOverId.current ? [{ id: lastOverId.current }] : [];
+      lastOverId.current = overId;
+      return [{ id: overId }]
+    }
+
+    // Nếu overId là null thì trả về mảng rỗng - tránh bug crash trang
+    return lastOverId.current ? [{ id: lastOverId.current }] : [];
   }, [activeDragItemType])
 
   return (
