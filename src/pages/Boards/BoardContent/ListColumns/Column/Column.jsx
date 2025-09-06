@@ -1,3 +1,4 @@
+import { toast } from 'react-toastify';
 import { useState } from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -60,8 +61,8 @@ function Column({ column }) {
 
     const addNewCard = () => {
         if (!newCardTitle) {
-        // console.error('Please enter Card Title!')
-        return 
+            toast.error('Please enter Card Title!', { position: 'bottom-right' })
+            return 
         }
         // console.log(newCardTitle)
         // Call API here
