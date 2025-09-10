@@ -24,7 +24,7 @@ import { CSS } from '@dnd-kit/utilities';
 import TextField from '@mui/material/TextField';
 import CloseIcon from '@mui/icons-material/Close';
 
-function Column({ column }) {
+function Column({ column, createNewCard }) {
     const {
         attributes,
         listeners,
@@ -59,13 +59,19 @@ function Column({ column }) {
 
     const [newCardTitle, setNewCardTitle] = useState('')
 
-    const addNewCard = () => {
+    const addNewCard = async () => {
         if (!newCardTitle) {
             toast.error('Please enter Card Title!', { position: 'bottom-right' })
             return 
         }
-        // console.log(newCardTitle)
-        // Call API here
+        
+        const newCardData = {
+            title: newCardTitle,
+            columnId: column._id
+        }
+
+        await createNewCard(newCardData)
+
         toggleOpenNewCardForm()
         setNewCardTitle('')
     }
