@@ -18,7 +18,6 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import AddCardIcon from '@mui/icons-material/AddCard';
 import DragHandleIcon from '@mui/icons-material/DragHandle';
 import ListCards from './ListCards/ListCards';
-import { mapOrder } from '~/utils/sorts';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import TextField from '@mui/material/TextField';
@@ -44,22 +43,22 @@ function Column({ column, createNewCard }) {
     };
 
     const [anchorEl, setAnchorEl] = useState(null);
-    const open = Boolean(anchorEl);
+    const open = Boolean(anchorEl)
     const handleClick = (event) => {
-        setAnchorEl(event.currentTarget);
+        setAnchorEl(event.currentTarget)
     };
     const handleClose = () => {
-        setAnchorEl(null);
+        setAnchorEl(null)
     };
 
-    const orderedCards = mapOrder(column?.cards, column?.cardOrderIds, '_id');
+    const orderedCards = column.cards
 
     const [openNewCardForm, setOpenNewCardForm] = useState(false)
     const toggleOpenNewCardForm = () => setOpenNewCardForm(!openNewCardForm)
 
     const [newCardTitle, setNewCardTitle] = useState('')
 
-    const addNewCard = async () => {
+    const addNewCard = () => {
         if (!newCardTitle) {
             toast.error('Please enter Card Title!', { position: 'bottom-right' })
             return 
@@ -70,7 +69,7 @@ function Column({ column, createNewCard }) {
             columnId: column._id
         }
 
-        await createNewCard(newCardData)
+        createNewCard(newCardData)
 
         toggleOpenNewCardForm()
         setNewCardTitle('')
