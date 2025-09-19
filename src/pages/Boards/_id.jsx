@@ -5,7 +5,14 @@ import BoardBar from './BoardBar/BoardBar';
 import BoardContent from './BoardContent/BoardContent';
 import { mapOrder } from '~/utils/sorts';
 // import { mockData } from '~/apis/mock-data';
-import { fetchBoardDetailsAPI, createNewColumnAPI, createNewCardAPI, updateBoardDetailsAPI, updateColumnDetailsAPI } from '~/apis';
+import { 
+  fetchBoardDetailsAPI, 
+  createNewColumnAPI, 
+  createNewCardAPI, 
+  updateBoardDetailsAPI, 
+  updateColumnDetailsAPI, 
+  moveCardToDifferentColumnAPI 
+} from '~/apis';
 import { generatePlaceholderCard } from '~/utils/formatters';
 import { isEmpty } from 'lodash';
 import Box from '@mui/material/Box';
@@ -27,7 +34,6 @@ function Board() {
           column.cards = mapOrder(column.cards, column.cardOrderIds, '_id')
         }
       })
-      console.log('full board: ', board)
       setBoard(board)
     })
   }, [])
@@ -58,8 +64,13 @@ function Board() {
     const newBoard = { ...board }
     const columnToUpdate = newBoard.columns.find(column => column._id === createdCard.columnId)
     if (columnToUpdate) {
-      columnToUpdate.cards.push(createdCard)
-      columnToUpdate.cardOrderIds.push(createdCard._id)
+      if (columnToUpdate.cards.some(card => card.FE_PlaceholderCard)) {
+        columnToUpdate.cards = [createdCard]
+        columnToUpdate.cardOrderIds = [createdCard._id]
+      } else {
+        columnToUpdate.cards.push(createdCard)
+        columnToUpdate.cardOrderIds.push(createdCard._id)
+      }
     }
     setBoard(newBoard)
   }
@@ -84,6 +95,33 @@ function Board() {
     setBoard(newBoard)
 
     updateColumnDetailsAPI(columnId, { cardOrderIds: dndOrderedCardIds })
+  }
+
+  /**
+   * Khi di chuyển card sang Column khác:
+   * B1: Cập nhật mảng cardOrderIds của Column ban đầu chứa nó (Hiểu bản chất là xóa cái _id của Card ra khỏi mảng)
+   * B2: Cập nhật mảng cardOrderIds của Column tiếp theo (Hiểu bản chất là thêm _id của Card vào mảng)
+   * B3: Cập nhật lại trường columnId mới của cái Card đã kéo
+   * => Làm một API support riêng.
+  */
+  const moveCardToDifferentColumn = (currentCardId, prevColumnId, nextColumnId, dndOrderedColumns) => {
+    const dndOrderedColumnsIds = dndOrderedColumns.map(c => c._id)
+    const newBoard = { ...board }
+    newBoard.columns = dndOrderedColumns
+    newBoard.columnOrderIds = dndOrderedColumnsIds
+    setBoard(newBoard)
+
+    // Trả mảng về rỗng nếu còn card cuối cùng(vì có chứa chuỗi 'placeholder-card' sẽ sai với rule ở BE)
+    let prevCardOrderIds = dndOrderedColumns.find(c => c._id === prevColumnId)?.cardOrderIds
+    if (prevCardOrderIds[0].includes('placeholder-card')) prevCardOrderIds = []
+
+    moveCardToDifferentColumnAPI({
+      currentCardId,
+      prevColumnId,
+      prevCardOrderIds,
+      nextColumnId,
+      nextCardOrderIds: dndOrderedColumns.find(c => c._id === nextColumnId)?.cardOrderIds
+    })
   }
 
   if (!board) {
@@ -112,6 +150,7 @@ function Board() {
         createNewCard={createNewCard} 
         moveColumns={moveColumns}
         moveCardInTheSameColumn={moveCardInTheSameColumn}
+        moveCardToDifferentColumn={moveCardToDifferentColumn}
       />
     </Container>
   );
