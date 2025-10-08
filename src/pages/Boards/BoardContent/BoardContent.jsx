@@ -29,7 +29,7 @@ const ACTIVE_DRAG_ITEM_TYPE = {
   CARD: 'ACTIVE_DRAG_ITEM_TYPE_CARD'
 }
 
-function BoardContent({ board, createNewColumn, createNewCard, moveColumns, moveCardInTheSameColumn, moveCardToDifferentColumn, deleteColumnDetails }) {
+function BoardContent({ board, moveColumns, moveCardInTheSameColumn, moveCardToDifferentColumn }) {
   // Nếu dùng PointerSensor mặc định thì phải kết hợp thuộc tính CSS touch-action: none ở những phần tử kéo thả (còn bug)
   // const pointerSensor = useSensor(PointerSensor, {activationConstraint: { distance: 10 }});
   
@@ -360,10 +360,7 @@ function BoardContent({ board, createNewColumn, createNewCard, moveColumns, move
         p: '10px 0'
       }}>
         <ListColumns 
-          columns={orderedColumns} 
-          createNewColumn={createNewColumn} 
-          createNewCard={createNewCard}
-          deleteColumnDetails={deleteColumnDetails}
+          columns={orderedColumns}
         />
         <DragOverlay dropAnimation={customDropAnimation}>
           {activeDragItemType && null}

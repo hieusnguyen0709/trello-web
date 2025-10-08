@@ -23,8 +23,18 @@ import { CSS } from '@dnd-kit/utilities';
 import TextField from '@mui/material/TextField';
 import CloseIcon from '@mui/icons-material/Close';
 import { useConfirm } from 'material-ui-confirm';
+import { createNewCardAPI, deleteColumnDetailsAPI } from '~/apis';
+import { 
+  updateCurrentActiveBoard,
+  selectCurrentActiveBoard
+} from '~/redux/activeBoard/activeBoardSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { cloneDeep } from 'lodash';
 
-function Column({ column, createNewCard, deleteColumnDetails }) {
+function Column({ column }) {
+    const dispatch = useDispatch()
+    const board = useSelector(selectCurrentActiveBoard)
+
     const {
         attributes,
         listeners,
@@ -59,7 +69,7 @@ function Column({ column, createNewCard, deleteColumnDetails }) {
 
     const [newCardTitle, setNewCardTitle] = useState('')
 
-    const addNewCard = () => {
+    const addNewCard = async () => {
         if (!newCardTitle) {
             toast.error('Please enter Card Title!', { position: 'bottom-right' })
             return 
@@ -70,7 +80,26 @@ function Column({ column, createNewCard, deleteColumnDetails }) {
             columnId: column._id
         }
 
-        createNewCard(newCardData)
+        // Gọi API tạo mới Card và làm lại dữ liệu State Board
+        const createdCard = await createNewCardAPI({
+            ...newCardData,
+            boardId: board._id
+        })
+    
+        // const newBoard = { ...board }
+        const newBoard = cloneDeep(board)
+        const columnToUpdate = newBoard.columns.find(column => column._id === createdCard.columnId)
+        if (columnToUpdate) {
+            if (columnToUpdate.cards.some(card => card.FE_PlaceholderCard)) {
+            columnToUpdate.cards = [createdCard]
+            columnToUpdate.cardOrderIds = [createdCard._id]
+            } else {
+            columnToUpdate.cards.push(createdCard)
+            columnToUpdate.cardOrderIds.push(createdCard._id)
+            }
+        }
+        // setBoard(newBoard)
+        dispatch(updateCurrentActiveBoard(newBoard))
 
         toggleOpenNewCardForm()
         setNewCardTitle('')
@@ -91,7 +120,15 @@ function Column({ column, createNewCard, deleteColumnDetails }) {
             // confirmationButtonProps: { color: 'secondary', variant: 'outlined' },
             // confirmationKeyword: 'hieunm'
         }).then(() => {
-            deleteColumnDetails(column._id)
+            const newBoard = { ...board }
+            newBoard.columns = newBoard.columns.filter(c => c._id !== column._id)
+            newBoard.columnOrderIds = newBoard.columnOrderIds.filter(_id => _id !== column._id)
+            // setBoard(newBoard)
+            dispatch(updateCurrentActiveBoard(newBoard))
+
+            deleteColumnDetailsAPI(column._id).then(res => {
+                toast.success(res?.deleteResult)
+            })
         }).catch(() => {})
     }
   
