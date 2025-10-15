@@ -50,7 +50,8 @@ function NotFound() {
           }}>
             &nbsp;SPACE&nbsp;
           </Typography>
-          &nbsp;<Typography variant="span" sx={{ color: '#fdba26', fontWeight: 500 }}>TrungQuanDev</Typography>?<br />Hmm, looks like that page doesn&apos;t exist.
+          ?
+          <br />Hmm, looks like that page doesn&apos;t exist.
         </Typography>
         <Box sx={{ width: '390px', height: '390px', position: 'relative' }}>
           <SvgIcon component={AstronautSvg} inheritViewBox sx={{
