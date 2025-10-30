@@ -14,9 +14,13 @@ import { store } from './redux/store';
 import { BrowserRouter } from 'react-router-dom';
 
 // Cấu hình Redux-Persist
-import { PersistGate } from 'redux-persist/integration/react'
-import { persistStore } from 'redux-persist'
-const persistor = persistStore(store)
+import { PersistGate } from 'redux-persist/integration/react';
+import { persistStore } from 'redux-persist';
+const persistor = persistStore(store);
+
+// Inject store: là kỹ thuật khi cần sử dụng biến redux store ở các file ngoài phạm vi component
+import { injectStore } from './utils/authorizeAxios';
+injectStore(store);
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <BrowserRouter basename='/'>
