@@ -4,9 +4,10 @@ import Board from "~/pages/Boards/_id";
 import NotFound from './pages/404/NotFound';
 import Auth from './pages/Auth/Auth';
 import AccountVerification from './pages/Auth/AccountVerification';
-import { useSelector } from 'react-redux'
-import { selectCurrentUser } from '~/redux/user/userSlice'
+import { useSelector } from 'react-redux';
+import { selectCurrentUser } from '~/redux/user/userSlice';
 import Settings from './pages/Settings/Settings';
+import Boards from '~/pages/Boards';
 
 /**
  * Giải pháp Clean Code trong việc xác định các route nào cần đăng nhập tài khoản xong thì mới cho truy cập
@@ -33,6 +34,8 @@ function App() {
       <Route element={<ProtectedRoute user={currentUser} />}>
         {/* Board Details */}
         <Route path='/boards/:boardId' element={<Board/>} />
+        <Route path='/boards' element={<Boards/>} />
+
         {/* User Settings */}
         <Route path='/settings/account' element={<Settings/>} />
         <Route path='/settings/security' element={<Settings/>} />
