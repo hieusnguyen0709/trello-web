@@ -1,4 +1,4 @@
-### Requirements
+### Requirements (Semantic Versioning)
 
 ```
 * nodejs >= 18.16.0
