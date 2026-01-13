@@ -26,7 +26,7 @@ import DvrOutlinedIcon from '@mui/icons-material/DvrOutlined'
 
 import ToggleFocusInput from '~/components/Form/ToggleFocusInput'
 import VisuallyHiddenInput from '~/components/Form/VisuallyHiddenInput'
-import { singleFileValidator } from '~/utils/validators'
+import { singleFileValidator, multiFilesValidator } from '~/utils/validators'
 import { toast } from 'react-toastify'
 import CardUserGroup from './CardUserGroup'
 import CardDescriptionMdEditor from './CardDescriptionMdEditor'
@@ -98,9 +98,8 @@ function ActiveCard() {
     callApiUpdateCard({ description: newDescription })
   }
 
-  const onUploadCardCover = (event) => {
-    // console.log(event.target?.files[0])
-    const error = singleFileValidator(event.target?.files[0])
+  const onUploadCardCover = (event, type = 'image') => {
+    const error = singleFileValidator(event.target?.files[0], type)
     if (error) {
       toast.error(error)
       return
@@ -108,10 +107,43 @@ function ActiveCard() {
     let reqData = new FormData()
     reqData.append('cardCover', event.target?.files[0])
 
-    // Gọi API...
     toast.promise(
       callApiUpdateCard(reqData).finally(() => event.target.value = ''),
-      { pending: 'Updating...' }
+      {
+        pending: 'Uploading...',
+        success: 'Successfully uploaded!',
+        error: {
+          render({ data }) {
+            return data?.message || 'Upload failed!'
+          }
+        }
+      }
+    )
+  }
+
+  const onUploadCardAttachment = (event, type = 'file') => {
+    const files = Array.from(event.target.files)
+    const error = multiFilesValidator(files, type)
+    if (error) {
+      toast.error(error)
+      return
+    }
+    let reqData = new FormData()
+    files.forEach(file => {
+      reqData.append('cardAttachments', file)
+    })
+
+    toast.promise(
+      callApiUpdateCard(reqData).finally(() => event.target.value = ''),
+      {
+        pending: 'Uploading...',
+        success: 'Successfully uploaded!',
+        error: {
+          render({ data }) {
+            return data?.message || 'Upload failed!'
+          }
+        }
+      }
     )
   }
 
@@ -198,6 +230,53 @@ function ActiveCard() {
               />
             </Box>
 
+            {/* <Box sx={{ mb: 3 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                <AttachFileOutlinedIcon />
+                <Typography variant="span" sx={{ fontWeight: '600', fontSize: '20px' }}>Attachment</Typography>
+              </Box>
+              <Grid container spacing={1.5}>
+                {activeCard?.attachments?.map((fileUrl, index) => {
+                  const fileName = decodeURIComponent(fileUrl.split('/').pop())
+
+                  return (
+                    <Grid item xs={4} key={index}>
+                      <Box
+                        onClick={() => window.open(fileUrl, '_blank')}
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 1,
+                          p: 1,
+                          borderRadius: 1,
+                          cursor: 'pointer',
+                          border: '1px solid #e0e0e0',
+                          '&:hover': {
+                            bgcolor: 'grey.100'
+                          }
+                        }}
+                      >
+                        <AttachFileOutlinedIcon fontSize="small" />
+
+                        <Typography
+                          sx={{
+                            fontSize: '14px',
+                            maxWidth: '100%',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis'
+                          }}
+                          title={fileName} // hover xem full tên
+                        >
+                          {fileName}
+                        </Typography>
+                      </Box>
+                    </Grid>
+                  )
+                })}
+              </Grid>
+            </Box> */}
+
             <Box sx={{ mb: 3 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                 <DvrOutlinedIcon />
@@ -236,7 +315,11 @@ function ActiveCard() {
                 <VisuallyHiddenInput type="file" onChange={onUploadCardCover} />
               </SidebarItem>
 
-              <SidebarItem><AttachFileOutlinedIcon fontSize="small" />Attachment</SidebarItem>
+              <SidebarItem className="active" component="label">
+                <AttachFileOutlinedIcon fontSize="small" />
+                Attachment
+                <VisuallyHiddenInput type="file" multiple onChange={onUploadCardAttachment} />
+              </SidebarItem>
               <SidebarItem><LocalOfferOutlinedIcon fontSize="small" />Labels</SidebarItem>
               <SidebarItem><TaskAltOutlinedIcon fontSize="small" />Checklist</SidebarItem>
               <SidebarItem><WatchLaterOutlinedIcon fontSize="small" />Dates</SidebarItem>

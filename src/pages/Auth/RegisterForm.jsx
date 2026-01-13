@@ -50,7 +50,7 @@ function RegisterForm() {
             <Avatar sx={{ bgcolor: 'primary.main' }}><TrelloIcon /></Avatar>
           </Box>
           <Box sx={{ marginTop: '1em', display: 'flex', justifyContent: 'center', color: theme => theme.palette.grey[500] }}>
-            Author: HieuNM
+            REGISTER
           </Box>
           <Box sx={{ padding: '0 1em 1em 1em' }}>
             <Box sx={{ marginTop: '1em' }}>
