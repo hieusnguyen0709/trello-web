@@ -43,6 +43,10 @@ import { selectCurrentUser } from '~/redux/user/userSlice'
 import { styled } from '@mui/material/styles'
 import { useDispatch, useSelector } from 'react-redux'
 import { CARD_MEMBER_ACTIONS } from '~/utils/constants'
+import { getFileExtension, isImageFile } from '~/utils/showActtachmentFile'
+import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
+import IconButton from '@mui/material/IconButton'
+import { useConfirm } from 'material-ui-confirm';
 
 const SidebarItem = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -147,6 +151,35 @@ function ActiveCard() {
     )
   }
 
+  const confirmDeleteCardAttachment = useConfirm()
+  const handleDeleteCardAttachment = (e, fileUrl) => {
+    e.stopPropagation();
+    confirmDeleteCardAttachment({
+      title: 'Remove this file?',
+      description: 'This action will permanently remove your attachment! Are you sure?',
+      confirmationText: 'Confirm',
+      cancellationText: 'Cancel',
+    }).then(() => {
+      const reqData = {
+        cardAttachmentRemove: fileUrl
+      }
+
+      toast.promise(
+        callApiUpdateCard(reqData),
+        {
+          pending: 'Removing...',
+          success: 'Successfully removed!',
+          error: {
+            render({ data }) {
+              return data?.message || 'Remove failed!'
+            }
+          }
+        }
+      )
+    })
+    .catch(() => {})
+  }
+
   // Dùng async/await ở đây để component CardActivitySection chờ và nếu thành công thì mới clear thẻ input comment
   const onAddCardComment = async (commentToAdd) => {
     await callApiUpdateCard({ commentToAdd })
@@ -230,52 +263,106 @@ function ActiveCard() {
               />
             </Box>
 
-            {/* <Box sx={{ mb: 3 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+            <Box sx={{ mb: 3 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1 }}>
                 <AttachFileOutlinedIcon />
                 <Typography variant="span" sx={{ fontWeight: '600', fontSize: '20px' }}>Attachment</Typography>
               </Box>
-              <Grid container spacing={1.5}>
+
+              <Stack spacing={1}>
                 {activeCard?.attachments?.map((fileUrl, index) => {
                   const fileName = decodeURIComponent(fileUrl.split('/').pop())
-
+                  const ext = getFileExtension(fileUrl)
+                  const isImage = isImageFile(ext)
                   return (
-                    <Grid item xs={4} key={index}>
+                    <Box
+                      key={index}
+                      onClick={() => window.open(`${fileUrl}?fl_attachment`, '_blank')}
+                      sx={{
+                        position: 'relative',
+                        display: 'flex',
+                        gap: 2,
+                        p: 1,
+                        borderRadius: 1,
+                        cursor: 'pointer',
+                        '&:hover': {
+                          bgcolor: 'grey.100'
+                        }
+                      }}
+                    >
                       <Box
-                        onClick={() => window.open(fileUrl, '_blank')}
                         sx={{
+                          width: 80,
+                          height: 60,
+                          borderRadius: 1,
+                          bgcolor: 'grey.200',
                           display: 'flex',
                           alignItems: 'center',
-                          gap: 1,
-                          p: 1,
-                          borderRadius: 1,
-                          cursor: 'pointer',
-                          border: '1px solid #e0e0e0',
+                          justifyContent: 'center',
+                          overflow: 'hidden',
+                          flexShrink: 0
+                        }}
+                      >
+                        {isImage ? (
+                          <img
+                            src={fileUrl}
+                            alt={fileName}
+                            style={{
+                              width: '100%',
+                              height: '100%',
+                              objectFit: 'cover'
+                            }}
+                          />
+                        ) : (
+                          <Typography
+                            sx={{
+                              fontWeight: 700,
+                              fontSize: 14,
+                              color: 'text.secondary'
+                            }}
+                          >
+                            {ext.toUpperCase()}
+                          </Typography>
+                        )}
+                      </Box>
+                      <IconButton
+                        size="small"
+                        onClick={(e) => handleDeleteCardAttachment(e, fileUrl)}
+                        sx={{
+                          position: 'absolute',
+                          top: 6,
+                          right: 6,
+                          bgcolor: 'error.light',
+                          color: '#fff',
+                          width: 24,
+                          height: 24,
                           '&:hover': {
-                            bgcolor: 'grey.100'
+                            bgcolor: 'error.main',
+                            color: '#fff'
                           }
                         }}
                       >
-                        <AttachFileOutlinedIcon fontSize="small" />
-
+                        <CloseOutlinedIcon sx={{ fontSize: 16 }} />
+                      </IconButton>
+                      <Box sx={{ flex: 1 }}>
                         <Typography
                           sx={{
-                            fontSize: '14px',
-                            maxWidth: '100%',
-                            whiteSpace: 'nowrap',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis'
+                            fontSize: 14,
+                            fontWeight: 500,
+                            wordBreak: 'break-word'
                           }}
-                          title={fileName} // hover xem full tên
                         >
                           {fileName}
                         </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {isImage ? 'Click to view' : 'Click to download'}
+                        </Typography>
                       </Box>
-                    </Grid>
+                    </Box>
                   )
                 })}
-              </Grid>
-            </Box> */}
+              </Stack>
+            </Box>
 
             <Box sx={{ mb: 3 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
