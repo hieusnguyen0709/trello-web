@@ -1,7 +1,3 @@
-/**
- * TrungQuanDev: https://youtube.com/@trungquandev
- */
-
 // Một vài biểu thức chính quy - Regular Expression và custom message.
 export const FIELD_REQUIRED_MESSAGE = 'This field is required.'
 export const EMAIL_RULE = /^\S+@\S+\.\S+$/
