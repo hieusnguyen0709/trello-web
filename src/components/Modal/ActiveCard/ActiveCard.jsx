@@ -31,6 +31,7 @@ import { toast } from 'react-toastify'
 import CardUserGroup from './CardUserGroup'
 import CardDescriptionMdEditor from './CardDescriptionMdEditor'
 import CardActivitySection from './CardActivitySection'
+import SidebarCreateChecklistModal from './SidebarCreateChecklistModal'
 import {
   clearAndHideCurrentActiveCard,
   selectCurrentActiveCard,
@@ -46,7 +47,8 @@ import { CARD_MEMBER_ACTIONS } from '~/utils/constants'
 import { getFileExtension, isImageFile } from '~/utils/showActtachmentFile'
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
 import IconButton from '@mui/material/IconButton'
-import { useConfirm } from 'material-ui-confirm';
+import { useConfirm } from 'material-ui-confirm'
+import Button from '@mui/material/Button'
 
 const SidebarItem = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -172,6 +174,54 @@ function ActiveCard() {
           error: {
             render({ data }) {
               return data?.message || 'Remove failed!'
+            }
+          }
+        }
+      )
+    })
+    .catch(() => {})
+  }
+
+  const onCreateCardChecklist = (newChecklist) => {
+    callApiUpdateCard({
+      checklistAction: {
+        type: 'ADD',
+        data: newChecklist
+      }
+    })
+  }
+
+  const onUpdateCardChecklist = (checklistId, updateData) => {
+    callApiUpdateCard({
+      checklistAction: {
+        type: 'UPDATE',
+        checklistId,
+        data: updateData
+      }
+    })
+  }
+
+  const confirmDeleteCardChecklist = useConfirm()
+  const handleDeleteCardChecklist = (checklistId, checklistTitle) => {
+    confirmDeleteCardChecklist({
+      title: `Delete ${checklistTitle}?`,
+      description: 'This action will permanently delete your checklist! Are you sure?',
+      confirmationText: 'Confirm',
+      cancellationText: 'Cancel',
+    }).then(() => {
+      toast.promise(
+        callApiUpdateCard({
+          checklistAction: {
+            type: 'DELETE',
+            checklistId
+          }
+        }),
+        {
+          pending: 'Deleting...',
+          success: 'Successfully deleted!',
+          error: {
+            render({ data }) {
+              return data?.message || 'Delete failed!'
             }
           }
         }
@@ -364,6 +414,46 @@ function ActiveCard() {
               </Stack>
             </Box>
 
+            {activeCard?.checklist?.length > 0 && (
+              activeCard.checklist.map((checklist) => (
+                <Box key={checklist._id} sx={{ mb: 3 }}>
+                  <Box
+                    sx={{
+                      mb: 2,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between'
+                    }}
+                  >
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                      <TaskAltOutlinedIcon />
+                      <ToggleFocusInput
+                        inputFontSize='18px'
+                        value={checklist.title}
+                        onChangedValue={(newTitle) =>
+                          onUpdateCardChecklist(checklist._id, { title: newTitle })
+                        }
+                      />
+                    </Box>
+
+                    <Button
+                      onClick={() => handleDeleteCardChecklist(checklist._id, checklist.title)}
+                      type="button"
+                      variant="contained"
+                      color="error"
+                      size="small"
+                      startIcon={<CloseOutlinedIcon />}
+                    >
+                      Delete
+                    </Button>
+                  </Box>
+
+                  {/* Nơi render checklist items */}
+                  {/* <ChecklistItems checklist={checklist} /> */}
+                </Box>
+              ))
+            )}
+
             <Box sx={{ mb: 3 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                 <DvrOutlinedIcon />
@@ -395,7 +485,7 @@ function ActiveCard() {
                   Join
                 </SidebarItem>
               }
-              {/* Feature 06: Xử lý hành động cập nhật ảnh Cover của Card */}
+
               <SidebarItem className="active" component="label">
                 <ImageOutlinedIcon fontSize="small" />
                 Cover
@@ -408,7 +498,12 @@ function ActiveCard() {
                 <VisuallyHiddenInput type="file" multiple onChange={onUploadCardAttachment} />
               </SidebarItem>
               <SidebarItem><LocalOfferOutlinedIcon fontSize="small" />Labels</SidebarItem>
-              <SidebarItem><TaskAltOutlinedIcon fontSize="small" />Checklist</SidebarItem>
+              <SidebarCreateChecklistModal onCreateChecklist={onCreateCardChecklist}>
+                <SidebarItem>
+                  <TaskAltOutlinedIcon fontSize="small" />
+                  Checklist
+                </SidebarItem>
+              </SidebarCreateChecklistModal>
               <SidebarItem><WatchLaterOutlinedIcon fontSize="small" />Dates</SidebarItem>
               <SidebarItem><AutoFixHighOutlinedIcon fontSize="small" />Custom Fields</SidebarItem>
             </Stack>
