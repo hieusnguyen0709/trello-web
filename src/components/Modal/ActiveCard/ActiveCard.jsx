@@ -32,6 +32,8 @@ import CardUserGroup from './CardUserGroup'
 import CardDescriptionMdEditor from './CardDescriptionMdEditor'
 import CardActivitySection from './CardActivitySection'
 import SidebarCreateChecklistModal from './SidebarCreateChecklistModal'
+import CardChecklist from './CardChecklist'
+import CardAttachment from './CardAttachment'
 import {
   clearAndHideCurrentActiveCard,
   selectCurrentActiveCard,
@@ -44,11 +46,7 @@ import { selectCurrentUser } from '~/redux/user/userSlice'
 import { styled } from '@mui/material/styles'
 import { useDispatch, useSelector } from 'react-redux'
 import { CARD_MEMBER_ACTIONS } from '~/utils/constants'
-import { getFileExtension, isImageFile } from '~/utils/showActtachmentFile'
-import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
-import IconButton from '@mui/material/IconButton'
 import { useConfirm } from 'material-ui-confirm'
-import Button from '@mui/material/Button'
 
 const SidebarItem = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -239,6 +237,37 @@ function ActiveCard() {
     callApiUpdateCard({ incomingMemberInfo })
   }
 
+  const onAddChecklistItem = (checklistId, itemData) => {
+    callApiUpdateCard({
+      checklistAction: {
+        type: 'ITEM_ADD',
+        checklistId,
+        data: itemData
+      }
+    })
+  }
+
+  const onUpdateChecklistItem = (checklistId, itemId, updateData) => {
+    callApiUpdateCard({
+      checklistAction: {
+        type: 'ITEM_UPDATE',
+        checklistId,
+        itemId,
+        data: updateData
+      }
+    })
+  }
+
+  const onDeleteChecklistItem = (checklistId, itemId) => {
+    callApiUpdateCard({
+      checklistAction: {
+        type: 'ITEM_DELETE',
+        checklistId,
+        itemId
+      }
+    })
+  }
+
   return (
     <Modal
       disableScrollLock
@@ -270,7 +299,7 @@ function ActiveCard() {
         {activeCard?.cover &&
           <Box sx={{ mb: 4 }}>
             <img
-              style={{ width: '100%', height: '320px', borderRadius: '6px', objectFit: 'cover' }}
+              style={{ width: '100%', height: '220px', borderRadius: '6px', objectFit: 'cover' }}
               src={activeCard?.cover}
               alt="card-cover"
             />
@@ -319,140 +348,28 @@ function ActiveCard() {
                 <Typography variant="span" sx={{ fontWeight: '600', fontSize: '20px' }}>Attachment</Typography>
               </Box>
 
-              <Stack spacing={1}>
-                {activeCard?.attachments?.map((fileUrl, index) => {
-                  const fileName = decodeURIComponent(fileUrl.split('/').pop())
-                  const ext = getFileExtension(fileUrl)
-                  const isImage = isImageFile(ext)
-                  return (
-                    <Box
-                      key={index}
-                      onClick={() => window.open(`${fileUrl}?fl_attachment`, '_blank')}
-                      sx={{
-                        position: 'relative',
-                        display: 'flex',
-                        gap: 2,
-                        p: 1,
-                        borderRadius: 1,
-                        cursor: 'pointer',
-                        '&:hover': {
-                          bgcolor: 'grey.100'
-                        }
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          width: 80,
-                          height: 60,
-                          borderRadius: 1,
-                          bgcolor: 'grey.200',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          overflow: 'hidden',
-                          flexShrink: 0
-                        }}
-                      >
-                        {isImage ? (
-                          <img
-                            src={fileUrl}
-                            alt={fileName}
-                            style={{
-                              width: '100%',
-                              height: '100%',
-                              objectFit: 'cover'
-                            }}
-                          />
-                        ) : (
-                          <Typography
-                            sx={{
-                              fontWeight: 700,
-                              fontSize: 14,
-                              color: 'text.secondary'
-                            }}
-                          >
-                            {ext.toUpperCase()}
-                          </Typography>
-                        )}
-                      </Box>
-                      <IconButton
-                        size="small"
-                        onClick={(e) => handleDeleteCardAttachment(e, fileUrl)}
-                        sx={{
-                          position: 'absolute',
-                          top: 6,
-                          right: 6,
-                          bgcolor: 'error.light',
-                          color: '#fff',
-                          width: 24,
-                          height: 24,
-                          '&:hover': {
-                            bgcolor: 'error.main',
-                            color: '#fff'
-                          }
-                        }}
-                      >
-                        <CloseOutlinedIcon sx={{ fontSize: 16 }} />
-                      </IconButton>
-                      <Box sx={{ flex: 1 }}>
-                        <Typography
-                          sx={{
-                            fontSize: 14,
-                            fontWeight: 500,
-                            wordBreak: 'break-word'
-                          }}
-                        >
-                          {fileName}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          {isImage ? 'Click to view' : 'Click to download'}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  )
-                })}
-              </Stack>
+              {/* Feature 04: Xử lý các tệp đính kèm của Card */}
+              <CardAttachment
+                attachments={activeCard?.attachments}
+                onDeleteAttachment={handleDeleteCardAttachment}
+              />
             </Box>
 
-            {activeCard?.checklist?.length > 0 && (
-              activeCard.checklist.map((checklist) => (
-                <Box key={checklist._id} sx={{ mb: 3 }}>
-                  <Box
-                    sx={{
-                      mb: 2,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between'
-                    }}
-                  >
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                      <TaskAltOutlinedIcon />
-                      <ToggleFocusInput
-                        inputFontSize='18px'
-                        value={checklist.title}
-                        onChangedValue={(newTitle) =>
-                          onUpdateCardChecklist(checklist._id, { title: newTitle })
-                        }
-                      />
-                    </Box>
-
-                    <Button
-                      onClick={() => handleDeleteCardChecklist(checklist._id, checklist.title)}
-                      type="button"
-                      variant="contained"
-                      color="error"
-                      size="small"
-                      startIcon={<CloseOutlinedIcon />}
-                    >
-                      Delete
-                    </Button>
-                  </Box>
-
-                  {/* Nơi render checklist items */}
-                  {/* <ChecklistItems checklist={checklist} /> */}
-                </Box>
-              ))
-            )}
+            <Box sx={{ mb: 3 }}>
+              {/* Feature 05: Xử lý các mục làm việc của Card */}
+              {Array.isArray(activeCard?.checklist) &&
+                activeCard.checklist.map(checklist => (
+                <CardChecklist
+                  key={checklist._id}
+                  checklist={checklist}
+                  onUpdateChecklist={onUpdateCardChecklist}
+                  onDeleteChecklist={handleDeleteCardChecklist}
+                  onAddChecklistItem={onAddChecklistItem}
+                  onUpdateChecklistItem={onUpdateChecklistItem}
+                  onDeleteChecklistItem={onDeleteChecklistItem}
+                />
+              ))}
+            </Box>
 
             <Box sx={{ mb: 3 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
