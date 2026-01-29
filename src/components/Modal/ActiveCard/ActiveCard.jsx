@@ -297,12 +297,14 @@ function ActiveCard() {
         </Box>
 
         {activeCard?.cover &&
-          <Box sx={{ mb: 4 }}>
-            <img
-              style={{ width: '100%', height: '220px', borderRadius: '6px', objectFit: 'cover' }}
-              src={activeCard?.cover}
-              alt="card-cover"
-            />
+          <Box sx={{ mb: 4, display: 'flex', justifyContent: 'center', background: 'linear-gradient(to bottom, #858585, #dbd8d8)'  }}>
+            <Box sx={{ width: '30%', height: '120px', borderRadius: '6px', overflow: 'hidden'}}>
+              <img
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                src={activeCard?.cover}
+                alt="card-cover"
+              />
+            </Box>
           </Box>
         }
 
