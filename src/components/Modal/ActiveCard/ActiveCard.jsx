@@ -31,7 +31,8 @@ import { toast } from 'react-toastify'
 import CardUserGroup from './CardUserGroup'
 import CardDescriptionMdEditor from './CardDescriptionMdEditor'
 import CardActivitySection from './CardActivitySection'
-import SidebarCreateChecklistModal from './SidebarCreateChecklistModal'
+import CreateCardChecklist from './CreateCardChecklist'
+import CreateCardLabel from './CreateCardLabel'
 import CardChecklist from './CardChecklist'
 import CardAttachment from './CardAttachment'
 import {
@@ -40,8 +41,18 @@ import {
   updateCurrentActiveCard,
   selectIsShowModalActiveCard
 } from '~/redux/activeCard/activeCardSlice'
-import { updateCardDetailsAPI } from '~/apis'
-import { updateCardInBoard } from '~/redux/activeBoard/activeBoardSlice'
+import { 
+  selectCurrentActiveBoard,
+  updateCurrentActiveBoard,
+  updateCardInBoard
+} from '~/redux/activeBoard/activeBoardSlice'
+import { updateCardDetailsAPI, updateBoardDetailsAPI } from '~/apis'
+import { 
+  createNewLabelAPI,
+  updateLabelAPI,
+  deleteLabelAPI
+} 
+from '~/apis'
 import { selectCurrentUser } from '~/redux/user/userSlice'
 import { styled } from '@mui/material/styles'
 import { useDispatch, useSelector } from 'react-redux'
@@ -76,6 +87,7 @@ function ActiveCard() {
   const activeCard = useSelector(selectCurrentActiveCard)
   const isShowModalActiveCard = useSelector(selectIsShowModalActiveCard)
   const currentUser = useSelector(selectCurrentUser)
+  const board = useSelector(selectCurrentActiveBoard)
 
   // const [isOpen, setIsOpen] = useState(true)
   // const handleOpenModal = () => setIsOpen(true)
@@ -268,6 +280,71 @@ function ActiveCard() {
     })
   }
 
+  const handleCardLabel = (type, labelId) => {
+    callApiUpdateCard({
+      labelAction: {
+        type: type,
+        labelId: labelId
+      }
+    })
+  }
+
+  const handleBoardLabel = async (type, data) => {
+    if (type == 'ADD') {
+      const createdLabel = await createNewLabelAPI({
+        boardId: board._id,
+        ...data
+      })
+
+      handleCardLabel(type, createdLabel._id)
+
+      const newBoard = {
+        ...board,
+        labelIds: [...(board.labelIds || []), createdLabel._id],
+        labels: [...(board.labels || []), createdLabel]
+      }
+
+      dispatch(updateCurrentActiveBoard(newBoard))
+
+      updateBoardDetailsAPI(newBoard._id, {
+        labelIds: newBoard.labelIds
+      })
+    } else if (type == 'UPDATE') {
+      const { _id, ...updateData } = data
+
+      const updatedLabel = await updateLabelAPI(_id, updateData)
+
+      const newBoard = {
+        ...board,
+        labels: board.labels.map(label =>
+          label._id === updatedLabel._id ? updatedLabel : label
+        )
+      }
+
+      dispatch(updateCurrentActiveBoard(newBoard))
+    } else if (type == 'DELETE') {
+      const labelId = data.labelId
+
+      await deleteLabelAPI(labelId)
+
+      const newBoard = {
+        ...board,
+        labelIds: board.labelIds.filter(id => id !== labelId),
+        labels: board.labels.filter(label => label._id !== labelId)
+      }
+
+      dispatch(updateCurrentActiveBoard(newBoard))
+
+      await updateBoardDetailsAPI(newBoard._id, {
+        labelIds: newBoard.labelIds
+      })
+
+      handleCardLabel(type, labelId)
+    } else {
+      //
+    }
+  }
+
   return (
     <Modal
       disableScrollLock
@@ -324,7 +401,7 @@ function ActiveCard() {
             <Box sx={{ mb: 3 }}>
               <Typography sx={{ fontWeight: '600', color: 'primary.main', mb: 1 }}>Members</Typography>
 
-              {/* Feature 02: Xử lý các thành viên của Card */}
+              {/* Member of Card */}
               <CardUserGroup 
                 cardMemberIds={activeCard?.memberIds}
                 onUpdateCardMembers={onUpdateCardMembers}
@@ -333,11 +410,20 @@ function ActiveCard() {
 
             <Box sx={{ mb: 3 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                <LocalOfferOutlinedIcon />
+                <Typography variant="span" sx={{ fontWeight: '600', fontSize: '20px' }}>Label</Typography>
+              </Box>
+
+              {/* Label of Card */}
+            </Box>
+
+            <Box sx={{ mb: 3 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                 <SubjectRoundedIcon />
                 <Typography variant="span" sx={{ fontWeight: '600', fontSize: '20px' }}>Description</Typography>
               </Box>
 
-              {/* Feature 03: Xử lý mô tả của Card */}
+              {/* Description of Card */}
               <CardDescriptionMdEditor 
                 cardDescriptionProp={activeCard?.description}
                 handleUpdateCardDescription={onUpdateCardDescription}
@@ -350,7 +436,7 @@ function ActiveCard() {
                 <Typography variant="span" sx={{ fontWeight: '600', fontSize: '20px' }}>Attachment</Typography>
               </Box>
 
-              {/* Feature 04: Xử lý các tệp đính kèm của Card */}
+              {/* Attachments of Card */}
               <CardAttachment
                 attachments={activeCard?.attachments}
                 onDeleteAttachment={handleDeleteCardAttachment}
@@ -358,7 +444,7 @@ function ActiveCard() {
             </Box>
 
             <Box sx={{ mb: 3 }}>
-              {/* Feature 05: Xử lý các mục làm việc của Card */}
+              {/* Checklist of Card */}
               {Array.isArray(activeCard?.checklist) &&
                 activeCard.checklist.map(checklist => (
                 <CardChecklist
@@ -379,7 +465,7 @@ function ActiveCard() {
                 <Typography variant="span" sx={{ fontWeight: '600', fontSize: '20px' }}>Activity</Typography>
               </Box>
 
-              {/* Feature 04: Xử lý các hành động, ví dụ comment vào Card */}
+              {/* Comment of Card */}
               <CardActivitySection 
                 cardComments={activeCard?.comments}
                 onAddCardComment={onAddCardComment}
@@ -391,7 +477,6 @@ function ActiveCard() {
           <Grid xs={12} sm={3}>
             <Typography sx={{ fontWeight: '600', color: 'primary.main', mb: 1 }}>Add To Card</Typography>
             <Stack direction="column" spacing={1}>
-              {/* Feature 05: Xử lý hành động bản thân user tự join vào card */}
               {!activeCard?.memberIds?.includes(currentUser._id) &&
                 <SidebarItem 
                   className="active" 
@@ -416,13 +501,23 @@ function ActiveCard() {
                 Attachment
                 <VisuallyHiddenInput type="file" multiple onChange={onUploadCardAttachment} />
               </SidebarItem>
-              <SidebarItem><LocalOfferOutlinedIcon fontSize="small" />Labels</SidebarItem>
-              <SidebarCreateChecklistModal onCreateChecklist={onCreateCardChecklist}>
+              <CreateCardLabel
+                boardLabels={board?.labels || []}
+                cardLabels={activeCard?.labelIds || []}
+                handleBoardLabel={handleBoardLabel}
+                handleCardLabel={handleCardLabel}
+              >
+                <SidebarItem>
+                  <LocalOfferOutlinedIcon fontSize="small" />
+                  Labels
+                </SidebarItem>
+              </CreateCardLabel>
+              <CreateCardChecklist onCreateChecklist={onCreateCardChecklist}>
                 <SidebarItem>
                   <TaskAltOutlinedIcon fontSize="small" />
                   Checklist
                 </SidebarItem>
-              </SidebarCreateChecklistModal>
+              </CreateCardChecklist>
               <SidebarItem><WatchLaterOutlinedIcon fontSize="small" />Dates</SidebarItem>
               <SidebarItem><AutoFixHighOutlinedIcon fontSize="small" />Custom Fields</SidebarItem>
             </Stack>
