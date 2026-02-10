@@ -13,7 +13,7 @@ import { useForm } from 'react-hook-form'
 import { FIELD_REQUIRED_MESSAGE } from '~/utils/validators'
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
 
-function SidebarCreateChecklistModal({ children, onCreateChecklist }) {
+function CreateCardChecklist({ children, onCreateChecklist }) {
   const { register, handleSubmit, reset, formState: { errors } = {} } = useForm()
   const [isOpen, setIsOpen] = useState(false)
 
@@ -62,7 +62,7 @@ function SidebarCreateChecklistModal({ children, onCreateChecklist }) {
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <TaskAltOutlinedIcon />
             <Typography variant="h6">
-              Create a new checklist
+              Create new checklist
             </Typography>
           </Box>
 
@@ -131,4 +131,4 @@ function SidebarCreateChecklistModal({ children, onCreateChecklist }) {
   )
 }
 
-export default SidebarCreateChecklistModal
+export default CreateCardChecklist
