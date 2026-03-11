@@ -9,8 +9,10 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux'
 import { updateCurrentActiveCard, showModalActiveCard } from '~/redux/activeCard/activeCardSlice';
+import Box from '@mui/material/Box'
+import { selectCurrentActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
 function Card({ card }) {    
     const dispatch = useDispatch()
     const {
@@ -41,6 +43,11 @@ function Card({ card }) {
         dispatch(updateCurrentActiveCard(card))
         dispatch(showModalActiveCard())
     }
+
+    const board = useSelector(selectCurrentActiveBoard)
+    const cardLabels = board?.labels?.filter(label =>
+        card?.labelIds?.includes(label._id)
+    ) || []
   return (
     <MuiCard 
         onClick={setActiveCard}
@@ -57,7 +64,37 @@ function Card({ card }) {
         }}
     >
         {card?.cover && <CardMedia sx={{ height: 140 }} image={card?.cover} />}
-        <CardContent sx={{ p: 1.5, '&:last-child': { p: 1.5 } }}>
+        <CardContent
+            sx={{
+                p: 1.5,
+                pb: 0.5,
+                '&:last-child': { p: 1.5 },
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 1
+            }}
+        >
+            {cardLabels.length > 0 && (
+                <Box sx={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+                    {cardLabels.map(label => (  
+                        <Box
+                        key={label._id}
+                        sx={{
+                            height: 8,
+                            minWidth: 38,
+                            borderRadius: '4px',
+                            backgroundColor: label.color,
+                            cursor: 'pointer',
+                            transition: 'filter .15s ease',
+
+                            '&:hover': {
+                                filter: 'brightness(1.15)'
+                            }
+                        }}
+                        />
+                    ))}
+                </Box>
+            )}
         <Typography>{card?.title}</Typography>
         </CardContent>
         {shouldShowCardActions() &&

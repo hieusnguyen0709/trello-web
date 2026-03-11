@@ -46,11 +46,13 @@ import {
   updateCurrentActiveBoard,
   updateCardInBoard
 } from '~/redux/activeBoard/activeBoardSlice'
-import { updateCardDetailsAPI, updateBoardDetailsAPI } from '~/apis'
 import { 
+  updateCardDetailsAPI, 
+  updateBoardDetailsAPI,
   createNewLabelAPI,
   updateLabelAPI,
-  deleteLabelAPI
+  deleteLabelAPI,
+  toggleLabelAPI
 } 
 from '~/apis'
 import { selectCurrentUser } from '~/redux/user/userSlice'
@@ -88,6 +90,9 @@ function ActiveCard() {
   const isShowModalActiveCard = useSelector(selectIsShowModalActiveCard)
   const currentUser = useSelector(selectCurrentUser)
   const board = useSelector(selectCurrentActiveBoard)
+  const cardLabels = board.labels.filter(label =>
+    activeCard?.labelIds?.includes(label._id)
+  )
 
   // const [isOpen, setIsOpen] = useState(true)
   // const handleOpenModal = () => setIsOpen(true)
@@ -280,69 +285,79 @@ function ActiveCard() {
     })
   }
 
-  const handleCardLabel = (type, labelId) => {
-    callApiUpdateCard({
+  const addLabel = async ({ title, color }) => {
+    // add label
+    const createdLabel = await createNewLabelAPI({
+      boardId: board._id,
+      title,
+      color
+    })
+
+    // update board
+    const newBoard = {
+      ...board,
+      labelIds: [...(board.labelIds || []), createdLabel._id],
+      labels: [...(board.labels || []), createdLabel]
+    }
+    dispatch(updateCurrentActiveBoard(newBoard))
+    updateBoardDetailsAPI(newBoard._id, {
+      labelIds: newBoard.labelIds
+    })
+
+    // update card
+    await callApiUpdateCard({
       labelAction: {
-        type: type,
-        labelId: labelId
+        type: 'ADD',
+        labelId: createdLabel._id
       }
     })
   }
 
-  const handleBoardLabel = async (type, data) => {
-    if (type == 'ADD') {
-      const createdLabel = await createNewLabelAPI({
-        boardId: board._id,
-        ...data
-      })
+  const updateLabel = async (labelId, data) => {
+    const updatedLabel = await updateLabelAPI(labelId, data)
 
-      handleCardLabel(type, createdLabel._id)
-
-      const newBoard = {
-        ...board,
-        labelIds: [...(board.labelIds || []), createdLabel._id],
-        labels: [...(board.labels || []), createdLabel]
-      }
-
-      dispatch(updateCurrentActiveBoard(newBoard))
-
-      updateBoardDetailsAPI(newBoard._id, {
-        labelIds: newBoard.labelIds
-      })
-    } else if (type == 'UPDATE') {
-      const { _id, ...updateData } = data
-
-      const updatedLabel = await updateLabelAPI(_id, updateData)
-
-      const newBoard = {
-        ...board,
-        labels: board.labels.map(label =>
-          label._id === updatedLabel._id ? updatedLabel : label
-        )
-      }
-
-      dispatch(updateCurrentActiveBoard(newBoard))
-    } else if (type == 'DELETE') {
-      const labelId = data.labelId
-
-      await deleteLabelAPI(labelId)
-
-      const newBoard = {
-        ...board,
-        labelIds: board.labelIds.filter(id => id !== labelId),
-        labels: board.labels.filter(label => label._id !== labelId)
-      }
-
-      dispatch(updateCurrentActiveBoard(newBoard))
-
-      await updateBoardDetailsAPI(newBoard._id, {
-        labelIds: newBoard.labelIds
-      })
-
-      handleCardLabel(type, labelId)
-    } else {
-      //
+    const newBoard = {
+      ...board,
+      labels: board.labels.map(label =>
+        label._id === updatedLabel._id ? updatedLabel : label
+      )
     }
+
+    dispatch(updateCurrentActiveBoard(newBoard))
+  }
+
+  const deleteLabel = async (labelId) => {
+    // delete label
+    await deleteLabelAPI(labelId)
+
+    // update board
+    const newBoard = {
+      ...board,
+      labelIds: board.labelIds.filter(id => id !== labelId),
+      labels: board.labels.filter(label => label._id !== labelId)
+    }
+    dispatch(updateCurrentActiveBoard(newBoard))
+    updateBoardDetailsAPI(newBoard._id, {
+      labelIds: newBoard.labelIds
+    })
+
+    // update card
+    await callApiUpdateCard({
+      labelAction: {
+        type: 'DELETE',
+        labelId
+      }
+    })
+  }
+
+  const toggleLabel = async (labelId) => {
+    const updatedCard = await toggleLabelAPI({
+      cardId: activeCard._id,
+      labelId
+    })
+    dispatch(updateCurrentActiveCard(updatedCard))
+    dispatch(updateCardInBoard(updatedCard))
+    dispatch(updateCurrentActiveBoard(board))
   }
 
   return (
@@ -415,6 +430,72 @@ function ActiveCard() {
               </Box>
 
               {/* Label of Card */}
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: '4px', mt: 1.5, flexWrap: 'wrap' }}>
+                {cardLabels.map(label => (
+                  <CreateCardLabel
+                    key={label._id}
+                    boardLabels={board?.labels || []}
+                    cardLabels={activeCard?.labelIds || []}
+                    addLabel={addLabel}
+                    updateLabel={updateLabel}
+                    deleteLabel={deleteLabel}
+                    toggleLabel={toggleLabel}
+                  >
+                    <Box
+                      sx={{
+                        height: 32,
+                        minWidth: 48,
+                        px: 1,
+                        borderRadius: '6px',
+                        backgroundColor: label.color,
+                        color: '#fff',
+                        fontWeight: 600,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer',
+                        transition: 'all .15s ease',
+                        boxShadow: 'inset 0 -2px rgba(0,0,0,.2)',
+
+                        '&:hover': {
+                          filter: 'brightness(1.15)'
+                        }
+                      }}
+                    >
+                      {label.title !== 'Empty' && label.title}
+                    </Box>
+                  </CreateCardLabel>
+                ))}
+
+                <CreateCardLabel
+                  boardLabels={board?.labels || []}
+                  cardLabels={activeCard?.labelIds || []}
+                  addLabel={addLabel}
+                  updateLabel={updateLabel}
+                  deleteLabel={deleteLabel}
+                  toggleLabel={toggleLabel}
+                >
+                  <Box
+                    sx={{
+                      height: 32,
+                      width: 32,
+                      borderRadius: '6px',
+                      backgroundColor: '#E4E6EA',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      fontWeight: 700,
+
+                      '&:hover': {
+                        backgroundColor: '#D0D4DA'
+                      }
+                    }}
+                  >
+                    +
+                  </Box>
+                </CreateCardLabel>
+              </Box>
             </Box>
 
             <Box sx={{ mb: 3 }}>
@@ -504,8 +585,10 @@ function ActiveCard() {
               <CreateCardLabel
                 boardLabels={board?.labels || []}
                 cardLabels={activeCard?.labelIds || []}
-                handleBoardLabel={handleBoardLabel}
-                handleCardLabel={handleCardLabel}
+                addLabel={addLabel}
+                updateLabel={updateLabel}
+                deleteLabel={deleteLabel}
+                toggleLabel={toggleLabel}
               >
                 <SidebarItem>
                   <LocalOfferOutlinedIcon fontSize="small" />
