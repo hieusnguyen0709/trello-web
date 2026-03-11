@@ -24,7 +24,7 @@ const LABEL_COLORS = [
   '#6FA8FF', '#6EC6DF', '#9ACA3C', '#EC77C2', '#8E8E93',
 ]
 
-function CreateCardLabel({ children, boardLabels = [], cardLabels = [], handleBoardLabel, handleCardLabel }) {
+function CreateCardLabel({ children, boardLabels = [], cardLabels = [], addLabel, updateLabel, deleteLabel, toggleLabel }) {
   const [anchorEl, setAnchorEl] = useState(null)
   const [view, setView] = useState('LIST')
   const [title, setTitle] = useState('')
@@ -43,27 +43,17 @@ function CreateCardLabel({ children, boardLabels = [], cardLabels = [], handleBo
   }
 
   const handleSave = () => {
+    const labelTitle = title.trim() || 'Empty'
     if (editingLabel) {
-      handleBoardLabel?.(
-        'UPDATE',
-        { ...editingLabel, title: title.trim() || 'Empty', color }
-      )
+      updateLabel(editingLabel._id, { title: labelTitle, color })
     } else {
-      handleBoardLabel?.(
-        'ADD', 
-        { title: title.trim() || 'Empty', color }
-      )
+      addLabel({ title: labelTitle, color })
     }
-
     resetToViewList()
   }
 
   const handleDelete = () => {
-    handleBoardLabel?.(
-      'DELETE',
-      {labelId: editingLabel._id }
-    )
-
+    deleteLabel(editingLabel._id)
     resetToViewList()
   }
 
@@ -84,8 +74,15 @@ function CreateCardLabel({ children, boardLabels = [], cardLabels = [], handleBo
         open={open}
         anchorEl={anchorEl}
         onClose={handleClose}
-        anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        anchorReference="anchorPosition"
+        anchorPosition={{
+          top: window.innerHeight / 2,
+          left: window.innerWidth / 2
+        }}
+        transformOrigin={{
+          vertical: 'center',
+          horizontal: 'center'
+        }}
         PaperProps={{
           sx: {
             width: 320,
@@ -136,7 +133,6 @@ function CreateCardLabel({ children, boardLabels = [], cardLabels = [], handleBo
 
                 {boardLabels.map(label => {
                   const isChecked = cardLabels.includes(label._id)
-                  const type = isChecked ? 'DELETE' : 'ADD'
 
                   return (
                     <Box
@@ -146,11 +142,11 @@ function CreateCardLabel({ children, boardLabels = [], cardLabels = [], handleBo
                       <Checkbox
                         size="small"
                         checked={isChecked}
-                        onChange={() => handleCardLabel(type, label._id)}
+                        onChange={() => toggleLabel(label._id)}
                       />
 
                       <Box
-                        onClick={() => handleCardLabel(type, label._id)}
+                       onClick={() => toggleLabel(label._id)}
                         sx={{
                           flex: 1,
                           height: 32,

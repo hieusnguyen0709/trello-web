@@ -94,3 +94,8 @@ export const deleteLabelAPI = async (labelId) => {
   const response = await authorizedAxiosInstance.delete(`${API_ROOT}/v1/labels/${labelId}`)
   return response.data
 }
+
+export const toggleLabelAPI = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/labels/toggle`, data)
+  return response.data
+}
