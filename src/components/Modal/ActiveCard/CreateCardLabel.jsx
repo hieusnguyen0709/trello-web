@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import {
   Box,
   Popover,
@@ -14,6 +14,7 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
 import LocalOfferOutlinedIcon from '@mui/icons-material/LocalOfferOutlined'
 import CheckIcon from '@mui/icons-material/Check'
 import Divider from '@mui/material/Divider'
+import Tooltip from '@mui/material/Tooltip'
 
 const LABEL_COLORS = [
   '#61bd4f','#f2d600','#ff9f1a','#eb5a46','#c377e0',
@@ -30,6 +31,14 @@ function CreateCardLabel({ children, boardLabels = [], cardLabels = [], addLabel
   const [title, setTitle] = useState('')
   const [color, setColor] = useState(LABEL_COLORS[0])
   const [editingLabel, setEditingLabel] = useState(null)
+  const [searchValue, setSearchValue] = useState('')
+  const keyword = searchValue.trim().toLowerCase()
+  const filteredLabels = useMemo(() => {
+  if (!keyword) return boardLabels
+    return boardLabels.filter(label =>
+      label.title.toLowerCase().includes(keyword)
+    )
+  }, [boardLabels, keyword])
 
   const open = Boolean(anchorEl)
 
@@ -124,14 +133,20 @@ function CreateCardLabel({ children, boardLabels = [], cardLabels = [], addLabel
        {/* ===== LIST VIEW ===== */}
         {view === 'LIST' && (
           <>
-            <TextField fullWidth size="small" placeholder="Find label..." sx={{ mb: 1.5 }} />
-            {boardLabels.length > 0 && (
+            <TextField 
+              fullWidth size="small" 
+              placeholder="Find label..." 
+              sx={{ mb: 1.5 }} 
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
+            />
+            {filteredLabels .length > 0 && (
               <>
                 <Typography sx={{ fontSize: 13, fontWeight: 600, mb: 1 }}>
                   Labels
                 </Typography>
 
-                {boardLabels.map(label => {
+                {filteredLabels .map(label => {
                   const isChecked = cardLabels.includes(label._id)
 
                   return (
@@ -145,18 +160,37 @@ function CreateCardLabel({ children, boardLabels = [], cardLabels = [], addLabel
                         onChange={() => toggleLabel(label._id)}
                       />
 
+                    <Tooltip title={label.title}>
                       <Box
-                       onClick={() => toggleLabel(label._id)}
+                        onClick={() => toggleLabel(label._id)}
                         sx={{
-                          flex: 1,
                           height: 32,
-                          borderRadius: 1,
-                          bgcolor: label.color,
+                          width: '100%',
+                          px: 1,
+                          borderRadius: '6px',
+                          backgroundColor: label.color,
+                          color: '#fff',
+                          fontWeight: 600,
+                          fontSize: '12px',
+                          fontFamily: 'inherit',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          textAlign: 'center',
                           cursor: 'pointer',
-                          opacity: 1,
-                          '&:hover': { opacity: 0.8 }
+                          transition: 'all .15s ease',
+                          boxShadow: 'inset 0 -2px rgba(0,0,0,.2)',
+                          overflow: 'hidden',
+                          whiteSpace: 'nowrap',
+                          textOverflow: 'ellipsis',
+                          '&:hover': {
+                            filter: 'brightness(1.15)'
+                          }
                         }}
-                      />
+                      >
+                        {label.title !== 'Empty' && label.title}
+                      </Box>
+                    </Tooltip>
 
                       <IconButton size="small"  
                         onClick={() => {
@@ -172,6 +206,12 @@ function CreateCardLabel({ children, boardLabels = [], cardLabels = [], addLabel
                   )
                 })}
               </>
+            )}
+
+            {filteredLabels.length === 0 && keyword && (
+              <Typography sx={{ fontSize: 13, color: 'text.secondary', mt: 1 }}>
+                No labels found
+              </Typography>
             )}
 
             <Button

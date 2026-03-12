@@ -13,6 +13,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { updateCurrentActiveCard, showModalActiveCard } from '~/redux/activeCard/activeCardSlice';
 import Box from '@mui/material/Box'
 import { selectCurrentActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
+import Tooltip from '@mui/material/Tooltip'
 function Card({ card }) {    
     const dispatch = useDispatch()
     const {
@@ -77,21 +78,23 @@ function Card({ card }) {
             {cardLabels.length > 0 && (
                 <Box sx={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
                     {cardLabels.map(label => (  
-                        <Box
-                        key={label._id}
-                        sx={{
-                            height: 8,
-                            minWidth: 38,
-                            borderRadius: '4px',
-                            backgroundColor: label.color,
-                            cursor: 'pointer',
-                            transition: 'filter .15s ease',
+                        <Tooltip title={label.title}>
+                            <Box
+                            key={label._id}
+                            sx={{
+                                height: 8,
+                                minWidth: 38,
+                                borderRadius: '4px',
+                                backgroundColor: label.color,
+                                cursor: 'pointer',
+                                transition: 'filter .15s ease',
 
-                            '&:hover': {
-                                filter: 'brightness(1.15)'
-                            }
-                        }}
-                        />
+                                '&:hover': {
+                                    filter: 'brightness(1.15)'
+                                }
+                            }}
+                            />
+                        </Tooltip>
                     ))}
                 </Box>
             )}
