@@ -60,6 +60,7 @@ import { styled } from '@mui/material/styles'
 import { useDispatch, useSelector } from 'react-redux'
 import { CARD_MEMBER_ACTIONS } from '~/utils/constants'
 import { useConfirm } from 'material-ui-confirm'
+import Tooltip from '@mui/material/Tooltip'
 
 const SidebarItem = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -441,29 +442,34 @@ function ActiveCard() {
                     deleteLabel={deleteLabel}
                     toggleLabel={toggleLabel}
                   >
-                    <Box
-                      sx={{
-                        height: 32,
-                        minWidth: 48,
-                        px: 1,
-                        borderRadius: '6px',
-                        backgroundColor: label.color,
-                        color: '#fff',
-                        fontWeight: 600,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        cursor: 'pointer',
-                        transition: 'all .15s ease',
-                        boxShadow: 'inset 0 -2px rgba(0,0,0,.2)',
-
-                        '&:hover': {
-                          filter: 'brightness(1.15)'
-                        }
-                      }}
-                    >
-                      {label.title !== 'Empty' && label.title}
-                    </Box>
+                    <Tooltip title={label.title}>
+                      <Box
+                        sx={{
+                          height: 32,
+                          minWidth: 48,
+                          px: 1,
+                          borderRadius: '6px',
+                          backgroundColor: label.color,
+                          color: '#fff',
+                          fontWeight: 600,
+                          fontSize: 12,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          cursor: 'pointer',
+                          transition: 'all .15s ease',
+                          boxShadow: 'inset 0 -2px rgba(0,0,0,.2)',
+                          overflow: 'hidden',
+                          whiteSpace: 'nowrap',
+                          textOverflow: 'ellipsis',
+                          '&:hover': {
+                            filter: 'brightness(1.15)'
+                          }
+                        }}
+                      >
+                        {label.title !== 'Empty' && label.title}
+                      </Box>
+                    </Tooltip>
                   </CreateCardLabel>
                 ))}
 
