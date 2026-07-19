@@ -25,7 +25,7 @@ import { toast } from 'react-toastify'
 function RegisterForm() {
   const { register, handleSubmit, formState: { errors }, watch } = useForm()
   const navigate = useNavigate()
-  
+
   const submitRegister = (data) => {
     const { email, password } = data
     toast.promise(
@@ -35,7 +35,7 @@ function RegisterForm() {
       navigate(`/login?registeredEmail=${user.email}`)
     })
   }
-  
+
   return (
     <form onSubmit={handleSubmit(submitRegister)}>
       <Zoom in={true} style={{ transitionDelay: '200ms' }}>

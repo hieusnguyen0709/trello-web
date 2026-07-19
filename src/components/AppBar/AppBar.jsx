@@ -1,28 +1,28 @@
-import Box from '@mui/material/Box';
-import ModeSelect from '~/components/ModeSelect/ModeSelect';
-import AppsIcon from '@mui/icons-material/Apps';
-import { ReactComponent as TrelloIcon } from '~/assets/trello.svg';
-import SvgIcon from '@mui/material/SvgIcon';
-import Typography from '@mui/material/Typography';
-import WorkSpaces from './Menu/WorkSpaces';
-import Recent from './Menu/Recent';
-import Starred from './Menu/Starred';
-import Templates from './Menu/Templates';
-import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-import Profiles from './Menu/Profiles';
-import LibraryAddIcon from '@mui/icons-material/LibraryAdd';
-import { Link } from 'react-router-dom';
-import Notifications from './Notifications/Notifications';
-import AutoCompleteSearchBoard from './SearchBoards/AutoCompleteSearchBoard';
+import Box from '@mui/material/Box'
+import ModeSelect from '~/components/ModeSelect/ModeSelect'
+import AppsIcon from '@mui/icons-material/Apps'
+import { ReactComponent as TrelloIcon } from '~/assets/trello.svg'
+import SvgIcon from '@mui/material/SvgIcon'
+import Typography from '@mui/material/Typography'
+import WorkSpaces from './Menu/WorkSpaces'
+import Recent from './Menu/Recent'
+import Starred from './Menu/Starred'
+import Templates from './Menu/Templates'
+import Button from '@mui/material/Button'
+import Tooltip from '@mui/material/Tooltip'
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline'
+import Profiles from './Menu/Profiles'
+import LibraryAddIcon from '@mui/icons-material/LibraryAdd'
+import { Link } from 'react-router-dom'
+import Notifications from './Notifications/Notifications'
+import AutoCompleteSearchBoard from './SearchBoards/AutoCompleteSearchBoard'
 
 function AppBar() {
   return (
-    <Box px={2} sx={{ 
-      width: '100%', 
-      height: (theme) => theme.trello.appBarHeight, 
-      display: 'flex', 
+    <Box px={2} sx={{
+      width: '100%',
+      height: (theme) => theme.trello.appBarHeight,
+      display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
       gap: 2,
@@ -47,15 +47,15 @@ function AppBar() {
           <Recent/>
           <Starred/>
           <Templates/>
-          <Button 
-            sx={{ 
+          <Button
+            sx={{
               color: 'white',
               border: 'none',
               '&:hover': {
                 border: 'none'
               }
             }}
-            variant="outlined" 
+            variant="outlined"
             startIcon={ <LibraryAddIcon/> }
           >
             Create

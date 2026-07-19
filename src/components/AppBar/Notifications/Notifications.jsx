@@ -14,8 +14,8 @@ import GroupAddIcon from '@mui/icons-material/GroupAdd'
 import DoneIcon from '@mui/icons-material/Done'
 import NotInterestedIcon from '@mui/icons-material/NotInterested'
 import { useDispatch, useSelector } from 'react-redux'
-import { 
-  fetchInvitationsAPI, 
+import {
+  fetchInvitationsAPI,
   selectCurrentNotifications,
   updateBoardInvitationAPI,
   addNotification
@@ -115,7 +115,7 @@ function Notifications() {
         onClose={handleClose}
         MenuListProps={{ 'aria-labelledby': 'basic-button-open-notification' }}
       >
-        {(!notifications || notifications.length === 0) && 
+        {(!notifications || notifications.length === 0) &&
           <MenuItem sx={{ minWidth: 200 }}>You do not have any new notifications.</MenuItem>
         }
         {notifications?.map((notification, index) =>
@@ -136,7 +136,7 @@ function Notifications() {
                 </Box>
 
                 {/* Khi Status của thông báo này là PENDING thì sẽ hiện 2 Button */}
-                {notification.boardInvitation.status === BOARD_INVITATION_STATUS.PENDING && 
+                {notification.boardInvitation.status === BOARD_INVITATION_STATUS.PENDING &&
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, justifyContent: 'flex-end' }}>
                     <Button
                       className="interceptor-loading"
@@ -163,10 +163,10 @@ function Notifications() {
 
                 {/* Khi Status của thông báo này là ACCEPTED hoặc REJECTED thì sẽ hiện thông tin đó lên */}
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, justifyContent: 'flex-end' }}>
-                  {notification.boardInvitation.status === BOARD_INVITATION_STATUS.ACCEPTED && 
+                  {notification.boardInvitation.status === BOARD_INVITATION_STATUS.ACCEPTED &&
                     <Chip icon={<DoneIcon />} label="Accepted" color="success" size="small" />
                   }
-                  {notification.boardInvitation.status === BOARD_INVITATION_STATUS.REJECTED && 
+                  {notification.boardInvitation.status === BOARD_INVITATION_STATUS.REJECTED &&
                     <Chip icon={<NotInterestedIcon />} label="Rejected" size="small" />
                   }
                 </Box>

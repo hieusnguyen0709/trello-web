@@ -90,16 +90,16 @@ function CardChecklist({
       {/* ===== ITEMS ===== */}
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
         {checklist.items?.map(item => (
-            <Box
-              key={item._id}
-              sx={{
-                position: 'relative',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 1,
-                pr: 4
-              }}
-            >
+          <Box
+            key={item._id}
+            sx={{
+              position: 'relative',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1,
+              pr: 4
+            }}
+          >
             <Checkbox
               checked={item.isCompleted}
               onChange={(e) =>
@@ -161,7 +161,7 @@ function CardChecklist({
             size="small"
             onClick={() => setIsAddingItem(true)}
           >
-            Add an item 
+            Add an item
           </Button>
         ) : (
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>

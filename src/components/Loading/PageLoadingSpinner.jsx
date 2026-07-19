@@ -1,6 +1,6 @@
-import Box from '@mui/material/Box';
-import CircularProgress from '@mui/material/CircularProgress';
-import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box'
+import CircularProgress from '@mui/material/CircularProgress'
+import Typography from '@mui/material/Typography'
 
 function PageLoadingSpinner({ caption }) {
   return (
@@ -15,7 +15,7 @@ function PageLoadingSpinner({ caption }) {
       <CircularProgress />
       <Typography>{caption}</Typography>
     </Box>
-  );
+  )
 }
 
-export default PageLoadingSpinner;
+export default PageLoadingSpinner

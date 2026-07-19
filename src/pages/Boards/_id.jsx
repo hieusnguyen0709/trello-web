@@ -1,24 +1,24 @@
 import { useEffect } from 'react'
-import Container from '@mui/material/Container';
-import AppBar from '~/components/AppBar/AppBar';
-import BoardBar from './BoardBar/BoardBar';
-import BoardContent from './BoardContent/BoardContent';
+import Container from '@mui/material/Container'
+import AppBar from '~/components/AppBar/AppBar'
+import BoardBar from './BoardBar/BoardBar'
+import BoardContent from './BoardContent/BoardContent'
 // import { mockData } from '~/apis/mock-data';
-import { 
-  updateBoardDetailsAPI, 
-  updateColumnDetailsAPI, 
+import {
+  updateBoardDetailsAPI,
+  updateColumnDetailsAPI,
   moveCardToDifferentColumnAPI
-} from '~/apis';
-import { cloneDeep } from 'lodash';
-import { 
-  fetchBoardDetailsAPI, 
+} from '~/apis'
+import { cloneDeep } from 'lodash'
+import {
+  fetchBoardDetailsAPI,
   updateCurrentActiveBoard,
   selectCurrentActiveBoard
-} from '~/redux/activeBoard/activeBoardSlice';
-import { useDispatch, useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
-import PageLoadingSpinner from '~/components/Loading/PageLoadingSpinner';
-import ActiveCard from '~/components/Modal/ActiveCard/ActiveCard';
+} from '~/redux/activeBoard/activeBoardSlice'
+import { useDispatch, useSelector } from 'react-redux'
+import { useParams } from 'react-router-dom'
+import PageLoadingSpinner from '~/components/Loading/PageLoadingSpinner'
+import ActiveCard from '~/components/Modal/ActiveCard/ActiveCard'
 
 function Board() {
   const dispatch = useDispatch()
@@ -44,7 +44,7 @@ function Board() {
   }
 
   const moveCardInTheSameColumn = (dndOrderedCards, dndOrderedCardIds, columnId) => {
-     /**
+    /**
      * Cannot assign to read only property 'cards' of object
      * Trường hợp Immutability ở đây đã đụng tới giá trị cards đang được coi là chỉ đọc read only – (nested object – can thiệp sâu dữ liệu)
      */
@@ -100,15 +100,15 @@ function Board() {
 
       <AppBar/>
       <BoardBar board={board}/>
-      <BoardContent 
-        board={board} 
+      <BoardContent
+        board={board}
 
         moveColumns={moveColumns}
         moveCardInTheSameColumn={moveCardInTheSameColumn}
         moveCardToDifferentColumn={moveCardToDifferentColumn}
       />
     </Container>
-  );
+  )
 }
 
 export default Board

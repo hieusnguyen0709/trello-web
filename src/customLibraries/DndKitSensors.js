@@ -1,6 +1,6 @@
-import { 
-    MouseSensor as DndLibMouseSensor, 
-    TouchSensor as DndLibTouchSensor 
+import {
+  MouseSensor as DndLibMouseSensor,
+  TouchSensor as DndLibTouchSensor
 } from '@dnd-kit/core'
 
 // Block DnD event propagation if element have "data-no-dnd" attribute

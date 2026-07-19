@@ -17,5 +17,6 @@ export const useDebounceFn = (fnToDebounce, delay = 500) => {
   }
 
   // Bọc cái thực thi debounce từ lodash vào useCallback để tránh re-render nhiều lần, mà chỉ re-render khi fnToDebounce hoặc delay thay đổi (như bài hướng dẫn ở trên)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   return useCallback(debounce(fnToDebounce, delay), [fnToDebounce, delay])
 }
