@@ -12,6 +12,10 @@ export default defineConfig({
     react(),
     svgr()
   ],
+  test: {
+    globals: true,
+    environment: 'node'
+  },
   resolve: {
     alias: [
       { find: '~', replacement: '/src'}

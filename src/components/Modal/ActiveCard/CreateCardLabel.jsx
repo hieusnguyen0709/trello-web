@@ -17,12 +17,12 @@ import Divider from '@mui/material/Divider'
 import Tooltip from '@mui/material/Tooltip'
 
 const LABEL_COLORS = [
-  '#61bd4f','#f2d600','#ff9f1a','#eb5a46','#c377e0',
+  '#61bd4f', '#f2d600', '#ff9f1a', '#eb5a46', '#c377e0',
   '#B7F5D8', '#F5EA7C', '#FFE3A3', '#FFD6D2', '#EBD9FF',
   '#4FD1A1', '#F2D024', '#FFA500', '#FF7A6E', '#C77DFF',
   '#1E8449', '#9A7D0A', '#D35400', '#C0392B', '#8E44AD',
   '#D6E6FF', '#CFF1FF', '#D6F5B2', '#FFD6EC', '#E0E0E0',
-  '#6FA8FF', '#6EC6DF', '#9ACA3C', '#EC77C2', '#8E8E93',
+  '#6FA8FF', '#6EC6DF', '#9ACA3C', '#EC77C2', '#8E8E93'
 ]
 
 function CreateCardLabel({ children, boardLabels = [], cardLabels = [], addLabel, updateLabel, deleteLabel, toggleLabel }) {
@@ -34,7 +34,7 @@ function CreateCardLabel({ children, boardLabels = [], cardLabels = [], addLabel
   const [searchValue, setSearchValue] = useState('')
   const keyword = searchValue.trim().toLowerCase()
   const filteredLabels = useMemo(() => {
-  if (!keyword) return boardLabels
+    if (!keyword) return boardLabels
     return boardLabels.filter(label =>
       label.title.toLowerCase().includes(keyword)
     )
@@ -114,12 +114,12 @@ function CreateCardLabel({ children, boardLabels = [], cardLabels = [], addLabel
             </IconButton>
           )}
 
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-          <LocalOfferOutlinedIcon />
-          <Typography sx={{ flex: 1, textAlign: 'center', fontWeight: 600 }} variant="h6">
-            {view === 'LIST' ? 'Label' : 'Create new label'}
-          </Typography>
-        </Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+            <LocalOfferOutlinedIcon />
+            <Typography sx={{ flex: 1, textAlign: 'center', fontWeight: 600 }} variant="h6">
+              {view === 'LIST' ? 'Label' : 'Create new label'}
+            </Typography>
+          </Box>
 
           <Box sx={{ position: 'absolute', top: 10, right: 10, cursor: 'pointer' }}>
             <CancelIcon
@@ -130,13 +130,13 @@ function CreateCardLabel({ children, boardLabels = [], cardLabels = [], addLabel
           </Box>
         </Box>
 
-       {/* ===== LIST VIEW ===== */}
+        {/* ===== LIST VIEW ===== */}
         {view === 'LIST' && (
           <>
-            <TextField 
-              fullWidth size="small" 
-              placeholder="Find label..." 
-              sx={{ mb: 1.5 }} 
+            <TextField
+              fullWidth size="small"
+              placeholder="Find label..."
+              sx={{ mb: 1.5 }}
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
             />
@@ -160,39 +160,39 @@ function CreateCardLabel({ children, boardLabels = [], cardLabels = [], addLabel
                         onChange={() => toggleLabel(label._id)}
                       />
 
-                    <Tooltip title={label.title}>
-                      <Box
-                        onClick={() => toggleLabel(label._id)}
-                        sx={{
-                          height: 32,
-                          width: '100%',
-                          px: 1,
-                          borderRadius: '6px',
-                          backgroundColor: label.color,
-                          color: '#fff',
-                          fontWeight: 600,
-                          fontSize: '12px',
-                          fontFamily: 'inherit',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          textAlign: 'center',
-                          cursor: 'pointer',
-                          transition: 'all .15s ease',
-                          boxShadow: 'inset 0 -2px rgba(0,0,0,.2)',
-                          overflow: 'hidden',
-                          whiteSpace: 'nowrap',
-                          textOverflow: 'ellipsis',
-                          '&:hover': {
-                            filter: 'brightness(1.15)'
-                          }
-                        }}
-                      >
-                        {label.title !== 'Empty' && label.title}
-                      </Box>
-                    </Tooltip>
+                      <Tooltip title={label.title}>
+                        <Box
+                          onClick={() => toggleLabel(label._id)}
+                          sx={{
+                            height: 32,
+                            width: '100%',
+                            px: 1,
+                            borderRadius: '6px',
+                            backgroundColor: label.color,
+                            color: '#fff',
+                            fontWeight: 600,
+                            fontSize: '12px',
+                            fontFamily: 'inherit',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            textAlign: 'center',
+                            cursor: 'pointer',
+                            transition: 'all .15s ease',
+                            boxShadow: 'inset 0 -2px rgba(0,0,0,.2)',
+                            overflow: 'hidden',
+                            whiteSpace: 'nowrap',
+                            textOverflow: 'ellipsis',
+                            '&:hover': {
+                              filter: 'brightness(1.15)'
+                            }
+                          }}
+                        >
+                          {label.title !== 'Empty' && label.title}
+                        </Box>
+                      </Tooltip>
 
-                      <IconButton size="small"  
+                      <IconButton size="small"
                         onClick={() => {
                           setEditingLabel(label)
                           setTitle(label.title)
@@ -231,117 +231,117 @@ function CreateCardLabel({ children, boardLabels = [], cardLabels = [], addLabel
           </>
         )}
 
-          {/* ===== CREATE VIEW ===== */}
-          {view === 'CREATE' && (
-            <>
-              <Box
-                sx={{
-                  height: 32,
-                  borderRadius: 1,
-                  bgcolor: color,
-                  mb: 2,
-                  px: 1.5,
-                  display: 'flex',
-                  alignItems: 'center',
-                  fontWeight: 600,
-                  fontSize: 14,
-                  color: '#fff',
-                  overflow: 'hidden',
-                  whiteSpace: 'nowrap',
-                  textOverflow: 'ellipsis'
-                }}
-              >
-                {title || ' '}
-              </Box>
+        {/* ===== CREATE VIEW ===== */}
+        {view === 'CREATE' && (
+          <>
+            <Box
+              sx={{
+                height: 32,
+                borderRadius: 1,
+                bgcolor: color,
+                mb: 2,
+                px: 1.5,
+                display: 'flex',
+                alignItems: 'center',
+                fontWeight: 600,
+                fontSize: 14,
+                color: '#fff',
+                overflow: 'hidden',
+                whiteSpace: 'nowrap',
+                textOverflow: 'ellipsis'
+              }}
+            >
+              {title || ' '}
+            </Box>
 
-              <TextField
-                fullWidth
-                size="small"
-                label="Title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                sx={{ mb: 2 }}
-              />
+            <TextField
+              fullWidth
+              size="small"
+              label="Title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              sx={{ mb: 2 }}
+            />
 
-              <Typography sx={{ fontSize: 14, mb: 1 }}>
+            <Typography sx={{ fontSize: 14, mb: 1 }}>
                 Pick a color
-              </Typography>
+            </Typography>
 
-              <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                {LABEL_COLORS.map(c => {
-                  const isSelected = c === color
+            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+              {LABEL_COLORS.map(c => {
+                const isSelected = c === color
 
-                  return (
-                    <Box
-                      key={c}
-                      onClick={() => setColor(c)}
-                      sx={{
-                        width: 52,
-                        height: 34,
-                        borderRadius: 1,
-                        bgcolor: c,
-                        cursor: 'pointer',
-                        position: 'relative',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        opacity: isSelected ? 1 : 0.9,
-                        '&:hover': { opacity: 1 }
-                      }}
-                    >
-                      {isSelected && (
-                        <CheckIcon
-                          sx={{
-                            color: '#fff',
-                            fontSize: 18,
-                            fontWeight: 700
-                          }}
-                        />
-                      )}
-                    </Box>
-                  )
-                })}
-                <Button
-                  fullWidth
-                  variant='outlined'
-                  color='inherit'
-                  sx={{ mt: 1.5 }}
-                  disabled={!color}
-                  onClick={() => setColor(null)}
-                >
-                  Remove label
-                </Button>
-              </Box>
-
-              <Divider sx={{ mt: 2, opacity: 0.6, bgcolor: 'gray'}} />
-              <Box
-                sx={{
-                  display: 'flex', 
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  mb: 1
-                }}
+                return (
+                  <Box
+                    key={c}
+                    onClick={() => setColor(c)}
+                    sx={{
+                      width: 52,
+                      height: 34,
+                      borderRadius: 1,
+                      bgcolor: c,
+                      cursor: 'pointer',
+                      position: 'relative',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      opacity: isSelected ? 1 : 0.9,
+                      '&:hover': { opacity: 1 }
+                    }}
+                  >
+                    {isSelected && (
+                      <CheckIcon
+                        sx={{
+                          color: '#fff',
+                          fontSize: 18,
+                          fontWeight: 700
+                        }}
+                      />
+                    )}
+                  </Box>
+                )
+              })}
+              <Button
+                fullWidth
+                variant='outlined'
+                color='inherit'
+                sx={{ mt: 1.5 }}
+                disabled={!color}
+                onClick={() => setColor(null)}
               >
+                  Remove label
+              </Button>
+            </Box>
+
+            <Divider sx={{ mt: 2, opacity: 0.6, bgcolor: 'gray' }} />
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                mb: 1
+              }}
+            >
+              <Button
+                variant='contained'
+                sx={{ mt: 2, width: '70px' }}
+                onClick={handleSave}
+              >
+                  Save
+              </Button>
+              {editingLabel && (
                 <Button
                   variant='contained'
+                  color='error'
                   sx={{ mt: 2, width: '70px' }}
-                  onClick={handleSave}
+                  onClick={handleDelete}
                 >
-                  Save
-                </Button>
-                {editingLabel && (
-                  <Button
-                    variant='contained'
-                    color='error'
-                    sx={{ mt: 2, width: '70px' }}
-                    onClick={handleDelete}  
-                  >
                     Delete
-                  </Button>
-                )}
-              </Box>
-            </>
-          )}
+                </Button>
+              )}
+            </Box>
+          </>
+        )}
       </Popover>
     </>
   )

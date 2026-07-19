@@ -41,20 +41,20 @@ import {
   updateCurrentActiveCard,
   selectIsShowModalActiveCard
 } from '~/redux/activeCard/activeCardSlice'
-import { 
+import {
   selectCurrentActiveBoard,
   updateCurrentActiveBoard,
   updateCardInBoard
 } from '~/redux/activeBoard/activeBoardSlice'
-import { 
-  updateCardDetailsAPI, 
+import {
+  updateCardDetailsAPI,
   updateBoardDetailsAPI,
   createNewLabelAPI,
   updateLabelAPI,
   deleteLabelAPI,
   toggleLabelAPI
-} 
-from '~/apis'
+}
+  from '~/apis'
 import { selectCurrentUser } from '~/redux/user/userSlice'
 import { styled } from '@mui/material/styles'
 import { useDispatch, useSelector } from 'react-redux'
@@ -108,7 +108,7 @@ function ActiveCard() {
     dispatch(updateCurrentActiveCard(updatedCard))
 
     dispatch(updateCardInBoard(updatedCard))
-    
+
     return updatedCard
   }
 
@@ -171,12 +171,12 @@ function ActiveCard() {
 
   const confirmDeleteCardAttachment = useConfirm()
   const handleDeleteCardAttachment = (e, fileUrl) => {
-    e.stopPropagation();
+    e.stopPropagation()
     confirmDeleteCardAttachment({
       title: 'Remove this file?',
       description: 'This action will permanently remove your attachment! Are you sure?',
       confirmationText: 'Confirm',
-      cancellationText: 'Cancel',
+      cancellationText: 'Cancel'
     }).then(() => {
       const reqData = {
         cardAttachmentRemove: fileUrl
@@ -195,7 +195,7 @@ function ActiveCard() {
         }
       )
     })
-    .catch(() => {})
+      .catch(() => {})
   }
 
   const onCreateCardChecklist = (newChecklist) => {
@@ -223,7 +223,7 @@ function ActiveCard() {
       title: `Delete ${checklistTitle}?`,
       description: 'This action will permanently delete your checklist! Are you sure?',
       confirmationText: 'Confirm',
-      cancellationText: 'Cancel',
+      cancellationText: 'Cancel'
     }).then(() => {
       toast.promise(
         callApiUpdateCard({
@@ -243,7 +243,7 @@ function ActiveCard() {
         }
       )
     })
-    .catch(() => {})
+      .catch(() => {})
   }
 
   // Dùng async/await ở đây để component CardActivitySection chờ và nếu thành công thì mới clear thẻ input comment
@@ -390,8 +390,8 @@ function ActiveCard() {
         </Box>
 
         {activeCard?.cover &&
-          <Box sx={{ mb: 4, display: 'flex', justifyContent: 'center', background: 'linear-gradient(to bottom, #858585, #dbd8d8)'  }}>
-            <Box sx={{ width: '30%', height: '120px', borderRadius: '6px', overflow: 'hidden'}}>
+          <Box sx={{ mb: 4, display: 'flex', justifyContent: 'center', background: 'linear-gradient(to bottom, #858585, #dbd8d8)' }}>
+            <Box sx={{ width: '30%', height: '120px', borderRadius: '6px', overflow: 'hidden' }}>
               <img
                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                 src={activeCard?.cover}
@@ -418,7 +418,7 @@ function ActiveCard() {
               <Typography sx={{ fontWeight: '600', color: 'primary.main', mb: 1 }}>Members</Typography>
 
               {/* Member of Card */}
-              <CardUserGroup 
+              <CardUserGroup
                 cardMemberIds={activeCard?.memberIds}
                 onUpdateCardMembers={onUpdateCardMembers}
               />
@@ -511,7 +511,7 @@ function ActiveCard() {
               </Box>
 
               {/* Description of Card */}
-              <CardDescriptionMdEditor 
+              <CardDescriptionMdEditor
                 cardDescriptionProp={activeCard?.description}
                 handleUpdateCardDescription={onUpdateCardDescription}
               />
@@ -534,16 +534,16 @@ function ActiveCard() {
               {/* Checklist of Card */}
               {Array.isArray(activeCard?.checklist) &&
                 activeCard.checklist.map(checklist => (
-                <CardChecklist
-                  key={checklist._id}
-                  checklist={checklist}
-                  onUpdateChecklist={onUpdateCardChecklist}
-                  onDeleteChecklist={handleDeleteCardChecklist}
-                  onAddChecklistItem={onAddChecklistItem}
-                  onUpdateChecklistItem={onUpdateChecklistItem}
-                  onDeleteChecklistItem={onDeleteChecklistItem}
-                />
-              ))}
+                  <CardChecklist
+                    key={checklist._id}
+                    checklist={checklist}
+                    onUpdateChecklist={onUpdateCardChecklist}
+                    onDeleteChecklist={handleDeleteCardChecklist}
+                    onAddChecklistItem={onAddChecklistItem}
+                    onUpdateChecklistItem={onUpdateChecklistItem}
+                    onDeleteChecklistItem={onDeleteChecklistItem}
+                  />
+                ))}
             </Box>
 
             <Box sx={{ mb: 3 }}>
@@ -553,7 +553,7 @@ function ActiveCard() {
               </Box>
 
               {/* Comment of Card */}
-              <CardActivitySection 
+              <CardActivitySection
                 cardComments={activeCard?.comments}
                 onAddCardComment={onAddCardComment}
               />
@@ -565,9 +565,9 @@ function ActiveCard() {
             <Typography sx={{ fontWeight: '600', color: 'primary.main', mb: 1 }}>Add To Card</Typography>
             <Stack direction="column" spacing={1}>
               {!activeCard?.memberIds?.includes(currentUser._id) &&
-                <SidebarItem 
-                  className="active" 
-                  onClick={() => onUpdateCardMembers({ 
+                <SidebarItem
+                  className="active"
+                  onClick={() => onUpdateCardMembers({
                     userId: currentUser._id,
                     action: CARD_MEMBER_ACTIONS.ADD
                   })}

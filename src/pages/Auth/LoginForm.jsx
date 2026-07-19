@@ -28,7 +28,7 @@ import { toast } from 'react-toastify'
 function LoginForm() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  
+
   const { register, handleSubmit, formState: { errors } } = useForm()
   let [searchParams] = useSearchParams()
   const registeredEmail = searchParams.get('registeredEmail')
@@ -40,8 +40,8 @@ function LoginForm() {
       dispatch(loginUserAPI({ email, password })),
       { pending: 'Logging in...' }
     ).then(res => {
-        console.log(res)
-        if (!res.error) navigate('/')
+      // console.log(res)
+      if (!res.error) navigate('/')
     })
   }
 
@@ -62,7 +62,7 @@ function LoginForm() {
             LOGIN
           </Box>
           <Box sx={{ marginTop: '1em', display: 'flex', justifyContent: 'center', flexDirection: 'column', padding: '0 1em' }}>
-            { verifiedEmail && 
+            { verifiedEmail &&
               <Alert severity="success" sx={{ '.MuiAlert-message': { overflow: 'hidden' } }}>
                 Your email&nbsp;
                 <Typography variant="span" sx={{ fontWeight: 'bold', '&:hover': { color: '#fdba26' } }}>{ verifiedEmail }</Typography>

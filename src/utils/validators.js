@@ -22,7 +22,7 @@ export const singleFileValidator = (file, type) => {
   if (!file || !file.name || !file.size || !file.type) {
     return 'File cannot be blank.'
   }
-  
+
   if (type == 'image') {
     if (file.size > LIMIT_COMMON_FILE_SIZE) {
       return 'Maximum file size exceeded. (10MB)'

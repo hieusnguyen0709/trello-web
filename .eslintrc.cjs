@@ -2,6 +2,14 @@
 // Sample Eslint config for React project
 module.exports = {
   env: { browser: true, es2020: true, node: true },
+  globals: {
+    describe: 'readonly',
+    it: 'readonly',
+    expect: 'readonly',
+    beforeEach: 'readonly',
+    afterEach: 'readonly',
+    vi: 'readonly'
+  },
   extends: [
     'eslint:recommended',
     'plugin:react/recommended',
@@ -24,12 +32,12 @@ module.exports = {
     'react/display-name': 0,
 
     // MUI
-    'no-restricted-imports': [
-      'error',
-      {
-        'patterns': [{ 'regex': '^@mui/[^/]+$' }]
-      }
-    ],
+    // 'no-restricted-imports': [
+    //   'error',
+    //   {
+    //     'patterns': [{ 'regex': '^@mui/[^/]+$' }]
+    //   }
+    // ],
 
     // COMMON
     'no-console': 1,

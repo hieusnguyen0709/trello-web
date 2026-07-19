@@ -1,12 +1,12 @@
-import { configureStore } from "@reduxjs/toolkit"
+import { configureStore } from '@reduxjs/toolkit'
 import { activeBoardReducer } from './activeBoard/activeBoardSlice'
 import { userReducer } from './user/userSlice'
-import { activeCardReducer } from "./activeCard/activeCardSlice"
-import { notificationsReducer } from "./notifications/notificationsSlice"
+import { activeCardReducer } from './activeCard/activeCardSlice'
+import { notificationsReducer } from './notifications/notificationsSlice'
 
 // Cấu hình redux-persist
 import { combineReducers } from 'redux'
-import { persistReducer} from 'redux-persist'
+import { persistReducer } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
 
 // Cấu hình persist
@@ -18,15 +18,15 @@ const rootPersistConfig = {
 }
 
 const reducers = combineReducers({
-    activeBoard: activeBoardReducer,
-    user: userReducer,
-    activeCard: activeCardReducer,
-    notifications: notificationsReducer
+  activeBoard: activeBoardReducer,
+  user: userReducer,
+  activeCard: activeCardReducer,
+  notifications: notificationsReducer
 })
 
 const persistedReducers = persistReducer(rootPersistConfig, reducers)
 
 export const store = configureStore({
-    reducer: persistedReducers,
-    middleware: (getDefaultMiddleware) => getDefaultMiddleware({ serializableCheck: false })
+  reducer: persistedReducers,
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware({ serializableCheck: false })
 })

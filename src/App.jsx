@@ -1,13 +1,13 @@
 import { Routes, Route, Navigate, Outlet } from 'react-router-dom'
 
-import Board from "~/pages/Boards/_id";
-import NotFound from './pages/404/NotFound';
-import Auth from './pages/Auth/Auth';
-import AccountVerification from './pages/Auth/AccountVerification';
-import { useSelector } from 'react-redux';
-import { selectCurrentUser } from '~/redux/user/userSlice';
-import Settings from './pages/Settings/Settings';
-import Boards from '~/pages/Boards';
+import Board from '~/pages/Boards/_id'
+import NotFound from './pages/404/NotFound'
+import Auth from './pages/Auth/Auth'
+import AccountVerification from './pages/Auth/AccountVerification'
+import { useSelector } from 'react-redux'
+import { selectCurrentUser } from '~/redux/user/userSlice'
+import Settings from './pages/Settings/Settings'
+import Boards from '~/pages/Boards'
 
 /**
  * Giải pháp Clean Code trong việc xác định các route nào cần đăng nhập tài khoản xong thì mới cho truy cập
@@ -47,7 +47,7 @@ function App() {
 
       <Route path='*' element={<NotFound/>} />
     </Routes>
-  );
+  )
 }
 
-export default App;
+export default App

@@ -106,8 +106,8 @@ function CardUserGroup({ cardMemberIds = [], onUpdateCardMembers }) {
                   cardMemberIds.includes(user._id)
                     ? <CheckCircleIcon fontSize="small" sx={{ color: '#27ae60' }} />
                     : null
-              }
-              onClick={() => handleUpdateCardMembers(user)}
+                }
+                onClick={() => handleUpdateCardMembers(user)}
               >
                 <Avatar
                   sx={{ width: 34, height: 34 }}
