@@ -1,9 +1,9 @@
 let apiRoot = ''
-if (process.env.BUILD_MODE === 'dev') {
+if (import.meta.env.MODE === 'development') {
   apiRoot = 'http://localhost:8017'
 }
-if (process.env.BUILD_MODE === 'production') {
-  apiRoot = 'http://100.53.216.68:8017'
+if (import.meta.env.MODE === 'production') {
+  apiRoot = import.meta.env.VITE_API_ROOT
 }
 export const API_ROOT = apiRoot
 
