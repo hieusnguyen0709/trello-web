@@ -10,7 +10,7 @@
   },
   "scripts": {
     "dev": "cross-env BUILD_MODE=dev vite --host",
-    "build": "cross-env BUILD_MODE=production vite build --base=./",
+    "build": "cross-env BUILD_MODE=production vite build",
     "lint": "eslint src --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "test": "vitest run",
     "preview": "vite preview"
