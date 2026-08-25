@@ -16,11 +16,25 @@ import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Pagination from '@mui/material/Pagination'
 import PaginationItem from '@mui/material/PaginationItem'
+import Menu from '@mui/material/Menu'
+import MenuItem from '@mui/material/MenuItem'
+import ListItemText from '@mui/material/ListItemText'
+import ListItemIcon from '@mui/material/ListItemIcon'
+import EditIcon from '@mui/icons-material/Edit'
+import ExpandMore from '@mui/icons-material/ExpandMore'
+import Tooltip from '@mui/material/Tooltip'
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
 import { Link, useLocation } from 'react-router-dom'
 import randomColor from 'randomcolor'
 import SidebarCreateBoardModal from './create'
-import { fetchBoardsAPI } from '~/apis'
+import { fetchBoardsAPI, updateBoardDetailsAPI, deleteBoardDetailsAPI } from '~/apis'
 import { DEFAULT_PAGE, DEFAULT_ITEMS_PER_PAGE } from '~/utils/constants'
+import { useSmartLoading } from '~/customHooks/useSmartLoading'
+import { useConfirm } from 'material-ui-confirm'
+import ActiveBoard from '~/components/Modal/ActiveBoard/ActiveBoard'
+import { selectCurrentUser } from '~/redux/user/userSlice'
+import { useSelector } from 'react-redux'
+import { toast } from 'react-toastify'
 
 import { styled } from '@mui/material/styles'
 // Styles của mấy cái Sidebar item menu, anh gom lại ra đây cho gọn.
@@ -42,6 +56,46 @@ const SidebarItem = styled(Box)(({ theme }) => ({
 }))
 
 function Boards() {
+  const currentUser = useSelector(selectCurrentUser)
+  const [anchorEl, setAnchorEl] = useState(null)
+  const [activeBoard, setActiveBoard] = useState(null)
+  const [openEditBoard, setOpenEditBoard] = useState(false)
+  const openMenuBoard = Boolean(anchorEl)
+
+  const handleClickBoard = (event, board) => {
+    setAnchorEl(event.currentTarget)
+    setActiveBoard(board)
+  }
+
+  const handleCloseBoard = () => {
+    setAnchorEl(null)
+  }
+
+  const handleEditBoard = () => {
+    setOpenEditBoard(true)
+  }
+
+  const handleSubmitEditBoard = (data) => {
+    updateBoardDetailsAPI(activeBoard._id, data).then(() => {
+      setOpenEditBoard(false)
+      fetchBoardsAPI(location.search).then(updateStateData)
+    })
+  }
+
+  const confirmDeleteColumn = useConfirm()
+  const handleDeleteBoard = () => {
+    confirmDeleteColumn({
+      title: 'Delete Board?',
+      description: 'This action will permanently delete your Board and all its data! Are you sure?',
+      confirmationText: 'Confirm',
+      cancellationText: 'Cancel'
+    }).then(() => {
+      deleteBoardDetailsAPI(activeBoard._id).then((res) => {
+        toast.success(res?.deleteResult)
+        fetchBoardsAPI(location.search).then(updateStateData)
+      })
+    }).catch(() => {})
+  }
   // Số lượng bản ghi boards hiển thị tối đa trên 1 page tùy dự án (thường sẽ là 12 cái)
   const [boards, setBoards] = useState(null)
   // Tổng toàn bộ số lượng bản ghi boards có trong Database mà phía BE trả về để FE dùng tính toán phân trang
@@ -59,6 +113,8 @@ function Boards() {
    * Nhắc lại kiến thức cơ bản hàm parseInt cần tham số thứ 2 là Hệ thập phân (hệ đếm cơ số 10) để đảm bảo chuẩn số cho phân trang
    */
   const page = parseInt(query.get('page') || '1', 10)
+
+  const showSpinner = useSmartLoading(!boards)
 
   const updateStateData = (res) => {
     setBoards(res.boards || [])
@@ -85,9 +141,13 @@ function Boards() {
     fetchBoardsAPI(location.search).then(updateStateData)
   }
 
+  if (showSpinner) {
+    return <PageLoadingSpinner caption="Loading Boards..." />
+  }
+
   // Lúc chưa tồn tại boards > đang chờ gọi api thì hiện loading
   if (!boards) {
-    return <PageLoadingSpinner caption="Loading Boards..." />
+    return null // đang trong khoảng SHOW_DELAY (chưa đủ lâu để hiện spinner)
   }
 
   return (
@@ -113,6 +173,13 @@ function Boards() {
             <Divider sx={{ my: 1 }} />
             <Stack direction="column" spacing={1}>
               <SidebarCreateBoardModal afterCreateNewBoard={afterCreateNewBoard} />
+              <ActiveBoard
+                open={openEditBoard}
+                mode="edit"
+                initialData={activeBoard}
+                onClose={() => setOpenEditBoard(false)}
+                onSubmit={handleSubmitEditBoard}
+              />
             </Stack>
           </Grid>
 
@@ -127,40 +194,116 @@ function Boards() {
             {/* Trường hợp gọi API và có boards trong Database trả về thì render danh sách boards */}
             {boards?.length > 0 &&
               <Grid container spacing={2}>
-                {boards.map(b =>
-                  <Grid xs={2} sm={3} md={4} key={b._id}>
-                    <Card sx={{ width: '250px' }}>
-                      {/* Ý tưởng mở rộng về sau làm ảnh Cover cho board nhé */}
-                      {/* <CardMedia component="img" height="100" image="https://picsum.photos/100" /> */}
-                      <Box sx={{ height: '50px', backgroundColor: randomColor() }}></Box>
+                {boards.map(b => {
+                  const isOwner = b.ownerIds?.some(ownerId => ownerId === currentUser?._id)
 
-                      <CardContent sx={{ p: 1.5, '&:last-child': { p: 1.5 } }}>
-                        <Typography gutterBottom variant="h6" component="div">
-                          {b?.title}
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          color="text.secondary"
-                          sx={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
-                          {b?.description}
-                        </Typography>
-                        <Box
-                          component={Link}
-                          to={`/boards/${b?._id}`}
-                          sx={{
-                            mt: 1,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'flex-end',
-                            color: 'primary.main',
-                            '&:hover': { color: 'primary.light' }
-                          }}>
-                          Go to board <ArrowRightIcon fontSize="small" />
-                        </Box>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                )}
+                  return (
+                    <Grid xs={2} sm={3} md={4} key={b._id}>
+                      <Card sx={{ width: '250px' }}>
+                        {/* Ý tưởng mở rộng về sau làm ảnh Cover cho board */}
+                        {/* <CardMedia component="img" height="100" image="https://picsum.photos/100" /> */}
+                        <Box sx={{ height: '50px', backgroundColor: randomColor() }}></Box>
+
+                        <CardContent sx={{ p: 1.5, '&:last-child': { p: 1.5 } }}>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                            <Tooltip title={b?.title || ''}>
+                              <Typography
+                                variant="h6"
+                                sx={{
+                                  fontWeight: 'bold',
+                                  minWidth: 0,
+                                  flex: 1,
+                                  overflow: 'hidden',
+                                  whiteSpace: 'nowrap',
+                                  textOverflow: 'ellipsis',
+                                  cursor: 'default'
+                                }}
+                              >
+                                {b?.title}
+                              </Typography>
+                            </Tooltip>
+
+                            <Tooltip title="More options">
+                              <ExpandMore
+                                sx={{
+                                  color: 'text.primary',
+                                  cursor: 'pointer'
+                                }}
+                                id="basic-board-dropdown"
+                                aria-controls={openMenuBoard ? 'basic-menu-board-dropdown' : undefined}
+                                aria-haspopup="true"
+                                aria-expanded={openMenuBoard ? 'true' : undefined}
+                                onClick={(event) => handleClickBoard(event, b)}
+                              />
+                            </Tooltip>
+
+                            <Menu
+                              id="basic-menu-board-dropdown"
+                              anchorEl={anchorEl}
+                              open={openMenuBoard}
+                              onClose={handleCloseBoard}
+                              onClick={handleCloseBoard}
+                              MenuListProps={{
+                                'aria-labelledby': 'basic-board-dropdown'
+                              }}
+                            >
+                              <MenuItem
+                                onClick={handleEditBoard}
+                                sx={{
+                                  '&:hover': {
+                                    color: 'primary.main',
+                                    '& .edit-icon': { color: 'primary.main' }
+                                  }
+                                }}>
+                                <ListItemIcon>
+                                  <EditIcon className="edit-icon" fontSize="small" />
+                                </ListItemIcon>
+                                <ListItemText>Edit this board</ListItemText>
+                              </MenuItem>
+
+                              {isOwner && [
+                                <Divider key="divider" />,
+                                <MenuItem
+                                  key="delete"
+                                  onClick={handleDeleteBoard}
+                                  sx={{
+                                    '&:hover': {
+                                      color: 'warning.dark',
+                                      '& .delete-forever-icon': { color: 'warning.dark' }
+                                    }
+                                  }}>
+                                  <ListItemIcon><DeleteForeverIcon className="delete-forever-icon" fontSize="small" /></ListItemIcon>
+                                  <ListItemText>Delete this board</ListItemText>
+                                </MenuItem>
+                              ]}
+                            </Menu>
+                          </Box>
+                          <Tooltip title={b?.description || ''}>
+                            <Typography
+                              variant="body2"
+                              color="text.secondary"
+                              sx={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                              {b?.description}
+                            </Typography>
+                          </Tooltip>
+                          <Box
+                            component={Link}
+                            to={`/boards/${b?._id}`}
+                            sx={{
+                              mt: 1,
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'flex-end',
+                              color: 'primary.main',
+                              '&:hover': { color: 'primary.light' }
+                            }}>
+                            Go to board <ArrowRightIcon fontSize="small" />
+                          </Box>
+                        </CardContent>
+                      </Card>
+                    </Grid>
+                  )
+                })}
               </Grid>
             }
 

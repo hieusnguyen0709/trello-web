@@ -99,7 +99,7 @@ function ListColumns({ columns }) {
                 py: 1
               }}
             >
-                  Add new column
+              Add new column
             </Button>
           </Box>
           : <Box sx={{

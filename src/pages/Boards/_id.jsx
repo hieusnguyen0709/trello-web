@@ -19,12 +19,14 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import PageLoadingSpinner from '~/components/Loading/PageLoadingSpinner'
 import ActiveCard from '~/components/Modal/ActiveCard/ActiveCard'
+import { useSmartLoading } from '~/customHooks/useSmartLoading'
 
 function Board() {
   const dispatch = useDispatch()
   // Không dùng State của component nữa mà chuyển qua dùng State của Redux
   // const [board, setBoard] = useState(null)
   const board = useSelector(selectCurrentActiveBoard)
+  const showSpinner = useSmartLoading(!board)
 
   const { boardId } = useParams()
 
@@ -89,8 +91,12 @@ function Board() {
     })
   }
 
-  if (!board) {
+  if (showSpinner) {
     return <PageLoadingSpinner caption="Loading Board..." />
+  }
+
+  if (!board) {
+    return null // đang trong khoảng SHOW_DELAY (chưa đủ lâu để hiện spinner)
   }
 
   return (
