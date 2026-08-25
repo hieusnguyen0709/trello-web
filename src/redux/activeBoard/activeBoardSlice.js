@@ -7,7 +7,8 @@ import { generatePlaceholderCard } from '~/utils/formatters'
 
 // Khởi tạo giá trị State của một cái Slice trong redux
 const initialState = {
-  currentActiveBoard: null
+  currentActiveBoard: null,
+  _latestRequestedBoardId: null // Theo dõi request mới nhất
 }
 
 // Các hành động gọi API (bất đồng bộ) và cập nhật dữ liệu vào Redux, dùng Middleware createAsyncThunk đi kèm với extraReducers
@@ -56,7 +57,16 @@ export const activeBoardSlice = createSlice({
   },
   // ExtraReducers: Nơi xử lý dữ liệu bất đồng bộ
   extraReducers: (builder) => {
+    builder.addCase(fetchBoardDetailsAPI.pending, (state, action) => {
+      state.currentActiveBoard = null,
+      state._latestRequestedBoardId = action.meta.arg // Ghi nhận boardId vừa được yêu cầu
+    })
     builder.addCase(fetchBoardDetailsAPI.fulfilled, (state, action) => {
+      // Chỉ áp dụng nếu đây đúng là response của request MỚI NHẤT
+      if (action.meta.arg !== state._latestRequestedBoardId) {
+        return // response "cũ", đến muộn -> bỏ qua, không ghi đè
+      }
+
       // action.payload ở đây chính là cái response.data trả về ở trên
       let board = action.payload
 
