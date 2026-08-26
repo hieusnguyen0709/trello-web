@@ -202,7 +202,7 @@ function Boards() {
                       <Card sx={{ width: '250px' }}>
                         {/* Ý tưởng mở rộng về sau làm ảnh Cover cho board */}
                         {/* <CardMedia component="img" height="100" image="https://picsum.photos/100" /> */}
-                        <Box sx={{ height: '50px', backgroundColor: randomColor() }}></Box>
+                        <Box sx={{ height: '50px', backgroundColor: b.bgColor || 'gray' }}></Box>
 
                         <CardContent sx={{ p: 1.5, '&:last-child': { p: 1.5 } }}>
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
