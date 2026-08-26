@@ -44,9 +44,11 @@ import {
 import {
   selectCurrentActiveBoard,
   updateCurrentActiveBoard,
-  updateCardInBoard
+  updateCardInBoard,
+  deleteCardFromBoard
 } from '~/redux/activeBoard/activeBoardSlice'
 import {
+  deleteCardDetailsAPI,
   updateCardDetailsAPI,
   updateBoardDetailsAPI,
   createNewLabelAPI,
@@ -61,6 +63,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { CARD_MEMBER_ACTIONS } from '~/utils/constants'
 import { useConfirm } from 'material-ui-confirm'
 import Tooltip from '@mui/material/Tooltip'
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
 
 const SidebarItem = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -361,16 +364,34 @@ function ActiveCard() {
     dispatch(updateCurrentActiveBoard(board))
   }
 
+  const confirmDeleteCard = useConfirm() // nếu chưa import useConfirm ở đầu file, thêm dòng import
+
+  const handleDeleteCard = () => {
+    confirmDeleteCard({
+      title: 'Delete Card?',
+      description: 'This action will permanently delete this card! Are you sure?',
+      confirmationText: 'Confirm',
+      cancellationText: 'Cancel'
+    }).then(() => {
+      deleteCardDetailsAPI(activeCard._id).then(() => {
+        dispatch(deleteCardFromBoard(activeCard))
+        dispatch(clearAndHideCurrentActiveCard())
+        toast.success('Card deleted successfully!')
+      })
+    }).catch(() => {})
+  }
+
   return (
     <Modal
-      disableScrollLock
       open={isShowModalActiveCard}
       onClose={handleCloseModal} // Sử dụng onClose trong trường hợp muốn đóng Modal bằng nút ESC hoặc click ra ngoài Modal
-      sx={{ overflowY: 'auto' }}>
+    >
       <Box sx={{
         position: 'relative',
         width: 900,
         maxWidth: 900,
+        maxHeight: 'calc(100vh - 100px)', // Giữ khoảng cách trên/dưới 50px
+        overflowY: 'auto', // Nội dung vượt quá chiều cao thì scroll
         bgcolor: 'white',
         boxShadow: 24,
         borderRadius: '8px',
@@ -613,22 +634,35 @@ function ActiveCard() {
 
             <Divider sx={{ my: 2 }} />
 
-            <Typography sx={{ fontWeight: '600', color: 'primary.main', mb: 1 }}>Power-Ups</Typography>
-            <Stack direction="column" spacing={1}>
-              <SidebarItem><AspectRatioOutlinedIcon fontSize="small" />Card Size</SidebarItem>
-              <SidebarItem><AddToDriveOutlinedIcon fontSize="small" />Google Drive</SidebarItem>
-              <SidebarItem><AddOutlinedIcon fontSize="small" />Add Power-Ups</SidebarItem>
-            </Stack>
-
-            <Divider sx={{ my: 2 }} />
-
             <Typography sx={{ fontWeight: '600', color: 'primary.main', mb: 1 }}>Actions</Typography>
             <Stack direction="column" spacing={1}>
+              <SidebarItem
+                sx={{
+                  color: 'error.main',
+                  '&:hover': {
+                    color: 'error.dark',
+                    backgroundColor: 'error.lighter'
+                  }
+                }}
+                onClick={handleDeleteCard}
+              >
+                <DeleteForeverIcon fontSize="small" />
+                Delete
+              </SidebarItem>
               <SidebarItem><ArrowForwardOutlinedIcon fontSize="small" />Move</SidebarItem>
               <SidebarItem><ContentCopyOutlinedIcon fontSize="small" />Copy</SidebarItem>
               <SidebarItem><AutoAwesomeOutlinedIcon fontSize="small" />Make Template</SidebarItem>
               <SidebarItem><ArchiveOutlinedIcon fontSize="small" />Archive</SidebarItem>
               <SidebarItem><ShareOutlinedIcon fontSize="small" />Share</SidebarItem>
+            </Stack>
+
+            <Divider sx={{ my: 2 }} />
+
+            <Typography sx={{ fontWeight: '600', color: 'primary.main', mb: 1 }}>Power-Ups</Typography>
+            <Stack direction="column" spacing={1}>
+              <SidebarItem><AspectRatioOutlinedIcon fontSize="small" />Card Size</SidebarItem>
+              <SidebarItem><AddToDriveOutlinedIcon fontSize="small" />Google Drive</SidebarItem>
+              <SidebarItem><AddOutlinedIcon fontSize="small" />Add Power-Ups</SidebarItem>
             </Stack>
           </Grid>
         </Grid>

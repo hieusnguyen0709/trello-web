@@ -59,7 +59,6 @@ function Boards() {
   const [anchorEl, setAnchorEl] = useState(null)
   const [activeBoard, setActiveBoard] = useState(null)
   const [openEditBoard, setOpenEditBoard] = useState(false)
-  const openMenuBoard = Boolean(anchorEl)
 
   const handleClickBoard = (event, board) => {
     setAnchorEl(event.currentTarget)
@@ -194,8 +193,6 @@ function Boards() {
             {boards?.length > 0 &&
               <Grid container spacing={2}>
                 {boards.map(b => {
-                  const isOwner = b.ownerIds?.some(ownerId => ownerId === currentUser?._id)
-
                   return (
                     <Grid xs={2} sm={3} md={4} key={b._id}>
                       <Card sx={{ width: '250px' }}>
@@ -228,54 +225,13 @@ function Boards() {
                                   color: 'text.primary',
                                   cursor: 'pointer'
                                 }}
-                                id="basic-board-dropdown"
-                                aria-controls={openMenuBoard ? 'basic-menu-board-dropdown' : undefined}
+                                id={`basic-board-dropdown-${b._id}`}
+                                aria-controls={anchorEl ? 'basic-menu-board-dropdown' : undefined}
                                 aria-haspopup="true"
-                                aria-expanded={openMenuBoard ? 'true' : undefined}
+                                aria-expanded={anchorEl ? 'true' : undefined}
                                 onClick={(event) => handleClickBoard(event, b)}
                               />
                             </Tooltip>
-
-                            <Menu
-                              id="basic-menu-board-dropdown"
-                              anchorEl={anchorEl}
-                              open={openMenuBoard}
-                              onClose={handleCloseBoard}
-                              onClick={handleCloseBoard}
-                              MenuListProps={{
-                                'aria-labelledby': 'basic-board-dropdown'
-                              }}
-                            >
-                              <MenuItem
-                                onClick={handleEditBoard}
-                                sx={{
-                                  '&:hover': {
-                                    color: 'primary.main',
-                                    '& .edit-icon': { color: 'primary.main' }
-                                  }
-                                }}>
-                                <ListItemIcon>
-                                  <EditIcon className="edit-icon" fontSize="small" />
-                                </ListItemIcon>
-                                <ListItemText>Edit this board</ListItemText>
-                              </MenuItem>
-
-                              {isOwner && [
-                                <Divider key="divider" />,
-                                <MenuItem
-                                  key="delete"
-                                  onClick={handleDeleteBoard}
-                                  sx={{
-                                    '&:hover': {
-                                      color: 'warning.dark',
-                                      '& .delete-forever-icon': { color: 'warning.dark' }
-                                    }
-                                  }}>
-                                  <ListItemIcon><DeleteForeverIcon className="delete-forever-icon" fontSize="small" /></ListItemIcon>
-                                  <ListItemText>Delete this board</ListItemText>
-                                </MenuItem>
-                              ]}
-                            </Menu>
                           </Box>
                           <Tooltip title={b?.description || ''}>
                             <Typography
@@ -305,6 +261,62 @@ function Boards() {
                 })}
               </Grid>
             }
+            <Menu
+              id="basic-menu-board-dropdown"
+              anchorEl={anchorEl}
+              open={Boolean(anchorEl)}
+              onClose={handleCloseBoard}
+              onClick={handleCloseBoard}
+              disableAutoFocusItem
+              MenuListProps={{
+                'aria-labelledby': activeBoard
+                  ? `basic-board-dropdown-${activeBoard._id}`
+                  : undefined
+              }}
+            >
+              <MenuItem
+                onClick={handleEditBoard}
+                sx={{
+                  '&:hover': {
+                    color: 'primary.main',
+                    '& .edit-icon': { color: 'primary.main' }
+                  }
+                }}
+              >
+                <ListItemIcon>
+                  <EditIcon className="edit-icon" fontSize="small" />
+                </ListItemIcon>
+                <ListItemText>Edit this board</ListItemText>
+              </MenuItem>
+
+              {activeBoard?.ownerIds?.some(
+                ownerId => ownerId === currentUser?._id
+              ) && (
+                <>
+                  <Divider />
+
+                  <MenuItem
+                    onClick={handleDeleteBoard}
+                    sx={{
+                      '&:hover': {
+                        color: 'warning.dark',
+                        '& .delete-forever-icon': {
+                          color: 'warning.dark'
+                        }
+                      }
+                    }}
+                  >
+                    <ListItemIcon>
+                      <DeleteForeverIcon
+                        className="delete-forever-icon"
+                        fontSize="small"
+                      />
+                    </ListItemIcon>
+                    <ListItemText>Delete this board</ListItemText>
+                  </MenuItem>
+                </>
+              )}
+            </Menu>
 
             {/* Trường hợp gọi API và có totalBoards trong Database trả về thì render khu vực phân trang  */}
             {(totalBoards > 0) &&
