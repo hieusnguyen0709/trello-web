@@ -47,7 +47,7 @@ function AppBar() {
           <Recent/>
           <Starred/>
           <Templates/>
-          <Button
+          {/* <Button
             sx={{
               color: 'white',
               border: 'none',
@@ -59,7 +59,7 @@ function AppBar() {
             startIcon={ <LibraryAddIcon/> }
           >
             Create
-          </Button>
+          </Button> */}
         </Box>
       </Box>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>

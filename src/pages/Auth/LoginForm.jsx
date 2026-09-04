@@ -24,15 +24,18 @@ import { useSearchParams, useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { loginUserAPI } from '~/redux/user/userSlice'
 import { toast } from 'react-toastify'
+import { DEMO_USER } from '~/utils/constants'
 
 function LoginForm() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
-  const { register, handleSubmit, formState: { errors } } = useForm()
+  const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm()
   let [searchParams] = useSearchParams()
   const registeredEmail = searchParams.get('registeredEmail')
   const verifiedEmail = searchParams.get('verifiedEmail')
+  const email = watch('email')
+  const password = watch('password')
 
   const submitLogIn = (data) => {
     const { email, password } = data
@@ -43,6 +46,11 @@ function LoginForm() {
       // console.log(res)
       if (!res.error) navigate('/')
     })
+  }
+
+  const fillDemoUser = () => {
+    setValue('email', DEMO_USER.EMAIL)
+    setValue('password', DEMO_USER.PASSWORD)
   }
 
   return (
@@ -85,6 +93,7 @@ function LoginForm() {
                 autoFocus
                 fullWidth
                 label="Enter Email..."
+                InputLabelProps={{ shrink: !!email }}
                 type="text"
                 variant="outlined"
                 error={!!errors['email']}
@@ -102,6 +111,7 @@ function LoginForm() {
               <TextField
                 fullWidth
                 label="Enter Password..."
+                InputLabelProps={{ shrink: !!password }}
                 type="password"
                 variant="outlined"
                 error={!!errors['password']}
@@ -128,6 +138,18 @@ function LoginForm() {
               Login
             </Button>
           </CardActions>
+          <Box sx={{ padding: '0 1em 1em 1em' }}>
+            <Button
+              onClick={fillDemoUser}
+              variant="outlined"
+              color="secondary"
+              size="large"
+              fullWidth
+              type="button"
+            >
+              Login as Demo
+            </Button>
+          </Box>
           <Box sx={{ padding: '0 1em 1em 1em', textAlign: 'center' }}>
             <Link to="/register" style={{ textDecoration: 'none' }}>
               <Typography sx={{ color: 'primary.main', '&:hover': { color: '#ffbb39' } }}>Create account!</Typography>
