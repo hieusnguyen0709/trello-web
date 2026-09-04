@@ -658,12 +658,12 @@ function ActiveCard() {
 
             <Divider sx={{ my: 2 }} />
 
-            <Typography sx={{ fontWeight: '600', color: 'primary.main', mb: 1 }}>Power-Ups</Typography>
+            {/* <Typography sx={{ fontWeight: '600', color: 'primary.main', mb: 1 }}>Power-Ups</Typography>
             <Stack direction="column" spacing={1}>
               <SidebarItem><AspectRatioOutlinedIcon fontSize="small" />Card Size</SidebarItem>
               <SidebarItem><AddToDriveOutlinedIcon fontSize="small" />Google Drive</SidebarItem>
               <SidebarItem><AddOutlinedIcon fontSize="small" />Add Power-Ups</SidebarItem>
-            </Stack>
+            </Stack> */}
           </Grid>
         </Grid>
       </Box>
