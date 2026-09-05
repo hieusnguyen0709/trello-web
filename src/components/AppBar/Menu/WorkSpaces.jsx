@@ -12,12 +12,14 @@ import ContentCopy from '@mui/icons-material/ContentCopy'
 import ContentPaste from '@mui/icons-material/ContentPaste'
 import Cloud from '@mui/icons-material/Cloud'
 import ExpandMore from '@mui/icons-material/ExpandMore'
+import { toast } from 'react-toastify'
 
 function WorkSpaces() {
   const [anchorEl, setAnchorEl] = React.useState(null)
   const open = Boolean(anchorEl)
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget)
+  const handleClick = () => {
+    // setAnchorEl(event.currentTarget)
+    toast.info('This feature is coming soon!')
   }
   const handleClose = () => {
     setAnchorEl(null)
@@ -50,7 +52,7 @@ function WorkSpaces() {
           </ListItemIcon>
           <ListItemText>Cut</ListItemText>
           <Typography variant="body2" color="text.secondary">
-                    ⌘X
+            ⌘X
           </Typography>
         </MenuItem>
         <MenuItem>
@@ -59,7 +61,7 @@ function WorkSpaces() {
           </ListItemIcon>
           <ListItemText>Copy</ListItemText>
           <Typography variant="body2" color="text.secondary">
-                    ⌘C
+            ⌘C
           </Typography>
         </MenuItem>
         <MenuItem>
@@ -68,7 +70,7 @@ function WorkSpaces() {
           </ListItemIcon>
           <ListItemText>Paste</ListItemText>
           <Typography variant="body2" color="text.secondary">
-                    ⌘V
+            ⌘V
           </Typography>
         </MenuItem>
         <Divider />
