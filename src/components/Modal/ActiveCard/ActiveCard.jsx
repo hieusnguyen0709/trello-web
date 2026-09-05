@@ -12,15 +12,15 @@ import TaskAltOutlinedIcon from '@mui/icons-material/TaskAltOutlined'
 import WatchLaterOutlinedIcon from '@mui/icons-material/WatchLaterOutlined'
 import AttachFileOutlinedIcon from '@mui/icons-material/AttachFileOutlined'
 import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined'
-import AutoFixHighOutlinedIcon from '@mui/icons-material/AutoFixHighOutlined'
+// import AutoFixHighOutlinedIcon from '@mui/icons-material/AutoFixHighOutlined'
 // import AspectRatioOutlinedIcon from '@mui/icons-material/AspectRatioOutlined'
 // import AddToDriveOutlinedIcon from '@mui/icons-material/AddToDriveOutlined'
 // import AddOutlinedIcon from '@mui/icons-material/AddOutlined'
 import ArrowForwardOutlinedIcon from '@mui/icons-material/ArrowForwardOutlined'
-import ContentCopyOutlinedIcon from '@mui/icons-material/ContentCopyOutlined'
-import AutoAwesomeOutlinedIcon from '@mui/icons-material/AutoAwesomeOutlined'
+// import ContentCopyOutlinedIcon from '@mui/icons-material/ContentCopyOutlined'
+// import AutoAwesomeOutlinedIcon from '@mui/icons-material/AutoAwesomeOutlined'
 import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined'
-import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined'
+// import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined'
 import SubjectRoundedIcon from '@mui/icons-material/SubjectRounded'
 import DvrOutlinedIcon from '@mui/icons-material/DvrOutlined'
 
@@ -628,8 +628,11 @@ function ActiveCard() {
                   Checklist
                 </SidebarItem>
               </CreateCardChecklist>
-              <SidebarItem><WatchLaterOutlinedIcon fontSize="small" />Dates</SidebarItem>
-              <SidebarItem><AutoFixHighOutlinedIcon fontSize="small" />Custom Fields</SidebarItem>
+              <SidebarItem onClick={() => toast.info('This feature is coming soon!')}>
+                <WatchLaterOutlinedIcon fontSize="small" />
+                Dates
+              </SidebarItem>
+              {/* <SidebarItem><AutoFixHighOutlinedIcon fontSize="small" />Custom Fields</SidebarItem> */}
             </Stack>
 
             <Divider sx={{ my: 2 }} />
@@ -649,14 +652,20 @@ function ActiveCard() {
                 <DeleteForeverIcon fontSize="small" />
                 Delete
               </SidebarItem>
-              <SidebarItem><ArrowForwardOutlinedIcon fontSize="small" />Move</SidebarItem>
-              <SidebarItem><ContentCopyOutlinedIcon fontSize="small" />Copy</SidebarItem>
-              <SidebarItem><AutoAwesomeOutlinedIcon fontSize="small" />Make Template</SidebarItem>
-              <SidebarItem><ArchiveOutlinedIcon fontSize="small" />Archive</SidebarItem>
-              <SidebarItem><ShareOutlinedIcon fontSize="small" />Share</SidebarItem>
+              <SidebarItem onClick={() => toast.info('This feature is coming soon!')}>
+                <ArrowForwardOutlinedIcon fontSize="small"/>
+                Move
+              </SidebarItem>
+              {/* <SidebarItem><ContentCopyOutlinedIcon fontSize="small" />Copy</SidebarItem> */}
+              {/* <SidebarItem><AutoAwesomeOutlinedIcon fontSize="small" />Make Template</SidebarItem> */}
+              <SidebarItem onClick={() => toast.info('This feature is coming soon!')}>
+                <ArchiveOutlinedIcon fontSize="small" />
+                Archive
+              </SidebarItem>
+              {/* <SidebarItem><ShareOutlinedIcon fontSize="small" />Share</SidebarItem> */}
             </Stack>
 
-            <Divider sx={{ my: 2 }} />
+            {/* <Divider sx={{ my: 2 }} /> */}
 
             {/* <Typography sx={{ fontWeight: '600', color: 'primary.main', mb: 1 }}>Power-Ups</Typography>
             <Stack direction="column" spacing={1}>

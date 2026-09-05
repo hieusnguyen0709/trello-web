@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography'
 import WorkSpaces from './Menu/WorkSpaces'
 import Recent from './Menu/Recent'
 import Starred from './Menu/Starred'
-import Templates from './Menu/Templates'
+// import Templates from './Menu/Templates'
 // import Button from '@mui/material/Button'
 import Tooltip from '@mui/material/Tooltip'
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline'
@@ -16,6 +16,7 @@ import Profiles from './Menu/Profiles'
 import { Link } from 'react-router-dom'
 import Notifications from './Notifications/Notifications'
 import AutoCompleteSearchBoard from './SearchBoards/AutoCompleteSearchBoard'
+import { toast } from 'react-toastify'
 
 function AppBar() {
   return (
@@ -46,7 +47,7 @@ function AppBar() {
           <WorkSpaces/>
           <Recent/>
           <Starred/>
-          <Templates/>
+          {/* <Templates/> */}
           {/* <Button
             sx={{
               color: 'white',
@@ -67,7 +68,7 @@ function AppBar() {
         <ModeSelect/>
         <Notifications />
         <Tooltip title="Help" sx={{ cursor: 'pointer', color: 'white' }}>
-          <HelpOutlineIcon/>
+          <HelpOutlineIcon onClick={() => toast.info('This feature is coming soon!')}/>
         </Tooltip>
         <Profiles/>
       </Box>

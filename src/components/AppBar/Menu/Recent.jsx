@@ -8,12 +8,14 @@ import ListItemText from '@mui/material/ListItemText'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ExpandMore from '@mui/icons-material/ExpandMore'
 import Check from '@mui/icons-material/Check'
+import { toast } from 'react-toastify'
 
 function Recent() {
   const [anchorEl, setAnchorEl] = React.useState(null)
   const open = Boolean(anchorEl)
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget)
+  const handleClick = () => {
+    // setAnchorEl(event.currentTarget)
+    toast.info('This feature is coming soon!')
   }
   const handleClose = () => {
     setAnchorEl(null)
