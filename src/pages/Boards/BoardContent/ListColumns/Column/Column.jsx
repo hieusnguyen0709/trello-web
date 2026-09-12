@@ -7,6 +7,7 @@ import Divider from '@mui/material/Divider'
 import MenuItem from '@mui/material/MenuItem'
 import ListItemText from '@mui/material/ListItemText'
 import ListItemIcon from '@mui/material/ListItemIcon'
+import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined'
 // import ContentCopy from '@mui/icons-material/ContentCopy'
 // import ContentPaste from '@mui/icons-material/ContentPaste'
 // import Cloud from '@mui/icons-material/Cloud'
@@ -29,6 +30,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux'
 import { cloneDeep } from 'lodash'
 import ToggleFocusInput from '~/components/Form/ToggleFocusInput'
+import ArchivedCardsModal from '~/components/Modal/ArchivedCards/ArchivedCards'
 
 function Column({ column }) {
   const dispatch = useDispatch()
@@ -52,6 +54,7 @@ function Column({ column }) {
     opacity: isDragging ? 0.5 : undefined
   }
 
+  const [openArchivedCardsModal, setOpenArchivedCardsModal] = useState(false)
   const [anchorEl, setAnchorEl] = useState(null)
   const open = Boolean(anchorEl)
   const handleClick = (event) => {
@@ -203,11 +206,15 @@ function Column({ column }) {
                 <ListItemIcon><AddCardIcon className="add-card-icon" fontSize="small" /></ListItemIcon>
                 <ListItemText>Add new card</ListItemText>
               </MenuItem>
+              <MenuItem onClick={() => setOpenArchivedCardsModal(true)}>
+                <ListItemIcon><ArchiveOutlinedIcon fontSize="small" /></ListItemIcon>
+                <ListItemText>View archived cards</ListItemText>
+              </MenuItem>
               {/* <MenuItem>
                 <ListItemIcon><ContentCut fontSize="small" /></ListItemIcon>
                 <ListItemText>Cut</ListItemText>
-              </MenuItem>
-              <MenuItem>
+              </MenuItem> */}
+              {/* <MenuItem>
                 <ListItemIcon><ContentCopy fontSize="small" /></ListItemIcon>
                 <ListItemText>Copy</ListItemText>
               </MenuItem>
@@ -233,6 +240,11 @@ function Column({ column }) {
                 <ListItemText>Archive this column</ListItemText>
               </MenuItem> */}
             </Menu>
+            <ArchivedCardsModal
+              open={openArchivedCardsModal}
+              onClose={() => setOpenArchivedCardsModal(false)}
+              columnId={column._id}
+            />
           </Box>
         </Box>
 
@@ -299,7 +311,7 @@ function Column({ column }) {
                     '&:hover': { bgcolor: (theme) => theme.palette.success.main }
                   }}
                 >
-                                    Add
+                  Add
                 </Button>
                 <CloseIcon
                   fontSize='small'
