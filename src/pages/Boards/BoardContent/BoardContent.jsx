@@ -53,7 +53,19 @@ function BoardContent({ board, moveColumns, moveCardInTheSameColumn, moveCardToD
 
   useEffect(() => {
     // Column đã được sắp xếp ở component cha cao nhất
-    setOrderedColumns(board.columns)
+    const processedColumns = board.columns.map(column => {
+      const visibleCards = column.cards.filter(card => !card.archivedAt)
+
+      return {
+        ...column,
+        cards: visibleCards.length > 0 ? visibleCards : [generatePlaceholderCard(column)],
+        cardOrderIds: visibleCards.length > 0
+          ? visibleCards.map(card => card._id)
+          : [generatePlaceholderCard(column)._id]
+      }
+    })
+
+    setOrderedColumns(processedColumns)
   }, [board])
 
   // Tìm column dựa theo Id

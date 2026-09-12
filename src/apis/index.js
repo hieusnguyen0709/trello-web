@@ -65,6 +65,21 @@ export const deleteCardDetailsAPI = async (cardId) => {
   return response.data
 }
 
+export const archiveCardAPI = async (cardId) => {
+  const response = await authorizedAxiosInstance.put(`${API_ROOT}/v1/cards/${cardId}/archive`)
+  return response.data
+}
+
+export const restoreCardAPI = async (cardId) => {
+  const response = await authorizedAxiosInstance.put(`${API_ROOT}/v1/cards/${cardId}/restore`)
+  return response.data
+}
+
+export const getArchivedCardsAPI = async (columnId) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/v1/cards/${columnId}/archivedCards`)
+  return response.data
+}
+
 /** Users */
 export const registerUserAPI = async (data) => {
   const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/users/register`, data)

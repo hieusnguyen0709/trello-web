@@ -54,7 +54,8 @@ import {
   createNewLabelAPI,
   updateLabelAPI,
   deleteLabelAPI,
-  toggleLabelAPI
+  toggleLabelAPI,
+  archiveCardAPI
 }
   from '~/apis'
 import { selectCurrentUser } from '~/redux/user/userSlice'
@@ -136,7 +137,7 @@ function ActiveCard() {
       callApiUpdateCard(reqData).finally(() => event.target.value = ''),
       {
         pending: 'Uploading...',
-        success: 'Successfully uploaded!',
+        success: 'Successfully uploaded cover!',
         error: {
           render({ data }) {
             return data?.message || 'Upload failed!'
@@ -162,7 +163,7 @@ function ActiveCard() {
       callApiUpdateCard(reqData).finally(() => event.target.value = ''),
       {
         pending: 'Uploading...',
-        success: 'Successfully uploaded!',
+        success: 'Successfully uploaded file!',
         error: {
           render({ data }) {
             return data?.message || 'Upload failed!'
@@ -189,7 +190,7 @@ function ActiveCard() {
         callApiUpdateCard(reqData),
         {
           pending: 'Removing...',
-          success: 'Successfully removed!',
+          success: 'Successfully removed file!',
           error: {
             render({ data }) {
               return data?.message || 'Remove failed!'
@@ -237,7 +238,7 @@ function ActiveCard() {
         }),
         {
           pending: 'Deleting...',
-          success: 'Successfully deleted!',
+          success: 'Successfully deleted checklist!',
           error: {
             render({ data }) {
               return data?.message || 'Delete failed!'
@@ -376,9 +377,19 @@ function ActiveCard() {
       deleteCardDetailsAPI(activeCard._id).then(() => {
         dispatch(deleteCardFromBoard(activeCard))
         dispatch(clearAndHideCurrentActiveCard())
-        toast.success('Card deleted successfully!')
+        toast.success('Successfully deleted card!')
       })
     }).catch(() => {})
+  }
+
+  const handleArchiveCard = async () => {
+    const archivedCard = await archiveCardAPI(activeCard._id)
+
+    dispatch(updateCardInBoard(archivedCard))
+
+    toast.success('Successfully archived card!')
+
+    dispatch(clearAndHideCurrentActiveCard())
   }
 
   return (
@@ -658,7 +669,7 @@ function ActiveCard() {
               </SidebarItem>
               {/* <SidebarItem><ContentCopyOutlinedIcon fontSize="small" />Copy</SidebarItem> */}
               {/* <SidebarItem><AutoAwesomeOutlinedIcon fontSize="small" />Make Template</SidebarItem> */}
-              <SidebarItem onClick={() => toast.info('This feature is coming soon!')}>
+              <SidebarItem onClick={handleArchiveCard}>
                 <ArchiveOutlinedIcon fontSize="small" />
                 Archive
               </SidebarItem>
