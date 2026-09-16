@@ -305,17 +305,17 @@ function ActiveCard() {
       labels: [...(board.labels || []), createdLabel]
     }
     dispatch(updateCurrentActiveBoard(newBoard))
-    updateBoardDetailsAPI(newBoard._id, {
-      labelIds: newBoard.labelIds
-    })
 
     // update card
-    await callApiUpdateCard({
-      labelAction: {
-        type: 'ADD',
-        labelId: createdLabel._id
-      }
-    })
+    await Promise.all([
+      updateBoardDetailsAPI(newBoard._id, { labelIds: newBoard.labelIds }),
+      callApiUpdateCard({
+        labelAction: {
+          type: 'ADD',
+          labelId: createdLabel._id
+        }
+      })
+    ])
   }
 
   const updateLabel = async (labelId, data) => {
@@ -342,17 +342,14 @@ function ActiveCard() {
       labels: board.labels.filter(label => label._id !== labelId)
     }
     dispatch(updateCurrentActiveBoard(newBoard))
-    updateBoardDetailsAPI(newBoard._id, {
-      labelIds: newBoard.labelIds
-    })
 
     // update card
-    await callApiUpdateCard({
-      labelAction: {
-        type: 'DELETE',
-        labelId
-      }
-    })
+    await Promise.all([
+      updateBoardDetailsAPI(newBoard._id, { labelIds: newBoard.labelIds }),
+      callApiUpdateCard({
+        labelAction: { type: 'DELETE', labelId }
+      })
+    ])
   }
 
   const toggleLabel = async (labelId) => {
@@ -362,7 +359,6 @@ function ActiveCard() {
     })
     dispatch(updateCurrentActiveCard(updatedCard))
     dispatch(updateCardInBoard(updatedCard))
-    dispatch(updateCurrentActiveBoard(board))
   }
 
   const confirmDeleteCard = useConfirm() // nếu chưa import useConfirm ở đầu file, thêm dòng import

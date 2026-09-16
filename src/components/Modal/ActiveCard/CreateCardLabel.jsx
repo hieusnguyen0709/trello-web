@@ -15,15 +15,8 @@ import LocalOfferOutlinedIcon from '@mui/icons-material/LocalOfferOutlined'
 import CheckIcon from '@mui/icons-material/Check'
 import Divider from '@mui/material/Divider'
 import Tooltip from '@mui/material/Tooltip'
-
-const LABEL_COLORS = [
-  '#61bd4f', '#f2d600', '#ff9f1a', '#eb5a46', '#c377e0',
-  '#B7F5D8', '#F5EA7C', '#FFE3A3', '#FFD6D2', '#EBD9FF',
-  '#4FD1A1', '#F2D024', '#FFA500', '#FF7A6E', '#C77DFF',
-  '#1E8449', '#9A7D0A', '#D35400', '#C0392B', '#8E44AD',
-  '#D6E6FF', '#CFF1FF', '#D6F5B2', '#FFD6EC', '#E0E0E0',
-  '#6FA8FF', '#6EC6DF', '#9ACA3C', '#EC77C2', '#8E8E93'
-]
+import { toast } from 'react-toastify'
+import { LABEL_COLORS } from '~/utils/constants'
 
 function CreateCardLabel({ children, boardLabels = [], cardLabels = [], addLabel, updateLabel, deleteLabel, toggleLabel }) {
   const [anchorEl, setAnchorEl] = useState(null)
@@ -32,6 +25,8 @@ function CreateCardLabel({ children, boardLabels = [], cardLabels = [], addLabel
   const [color, setColor] = useState(LABEL_COLORS[0])
   const [editingLabel, setEditingLabel] = useState(null)
   const [searchValue, setSearchValue] = useState('')
+  const [saving, setSaving] = useState(false)
+  const [deleting, setDeleting] = useState(false)
   const keyword = searchValue.trim().toLowerCase()
   const filteredLabels = useMemo(() => {
     if (!keyword) return boardLabels
@@ -51,19 +46,33 @@ function CreateCardLabel({ children, boardLabels = [], cardLabels = [], addLabel
     resetToViewList()
   }
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const labelTitle = title.trim() || 'Empty'
-    if (editingLabel) {
-      updateLabel(editingLabel._id, { title: labelTitle, color })
-    } else {
-      addLabel({ title: labelTitle, color })
+    setSaving(true)
+    try {
+      if (editingLabel) {
+        await updateLabel(editingLabel._id, { title: labelTitle, color })
+      } else {
+        await addLabel({ title: labelTitle, color })
+      }
+      resetToViewList()
+    } catch (error) {
+      toast.error('Failed to save label. Please try again.')
+    } finally {
+      setSaving(false)
     }
-    resetToViewList()
   }
 
-  const handleDelete = () => {
-    deleteLabel(editingLabel._id)
-    resetToViewList()
+  const handleDelete = async () => {
+    setDeleting(true)
+    try {
+      await deleteLabel(editingLabel._id)
+      resetToViewList()
+    } catch (error) {
+      toast.error('Failed to delete label. Please try again.')
+    } finally {
+      setDeleting(false)
+    }
   }
 
   const resetToViewList = () => {
@@ -140,13 +149,13 @@ function CreateCardLabel({ children, boardLabels = [], cardLabels = [], addLabel
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
             />
-            {filteredLabels .length > 0 && (
+            {filteredLabels.length > 0 && (
               <>
                 <Typography sx={{ fontSize: 13, fontWeight: 600, mb: 1 }}>
                   Labels
                 </Typography>
 
-                {filteredLabels .map(label => {
+                {filteredLabels.map(label => {
                   const isChecked = cardLabels.includes(label._id)
 
                   return (
@@ -309,7 +318,7 @@ function CreateCardLabel({ children, boardLabels = [], cardLabels = [], addLabel
                 disabled={!color}
                 onClick={() => setColor(null)}
               >
-                  Remove label
+                Remove label
               </Button>
             </Box>
 
@@ -322,21 +331,27 @@ function CreateCardLabel({ children, boardLabels = [], cardLabels = [], addLabel
                 mb: 1
               }}
             >
-              <Button
-                variant='contained'
-                sx={{ mt: 2, width: '70px' }}
-                onClick={handleSave}
-              >
-                  Save
-              </Button>
+              <Tooltip title={!color ? 'Pick a color first' : ''}>
+                <span>
+                  <Button
+                    variant='contained'
+                    sx={{ mt: 2, width: '70px' }}
+                    onClick={handleSave}
+                    disabled={saving || deleting || !color}
+                  >
+                    {saving ? 'Saving...' : 'Save'}
+                  </Button>
+                </span>
+              </Tooltip>
               {editingLabel && (
                 <Button
                   variant='contained'
                   color='error'
                   sx={{ mt: 2, width: '70px' }}
                   onClick={handleDelete}
+                  disabled={saving || deleting}
                 >
-                    Delete
+                  {deleting ? 'Deleting...' : 'Delete'}
                 </Button>
               )}
             </Box>
