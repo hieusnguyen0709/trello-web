@@ -27,8 +27,9 @@ function ArchivedCards({ open, onClose, columnId }) {
 
   useEffect(() => {
     if (open && columnId) {
-      getArchivedCardsAPI(columnId).then(setCards)
+      setCards([])
       setSelectedIds([])
+      getArchivedCardsAPI(columnId).then(setCards)
     }
   }, [open, columnId])
 
