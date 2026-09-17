@@ -35,8 +35,6 @@ function Notifications() {
   const open = Boolean(anchorEl)
   const handleClickNotificationIcon = (event) => {
     setAnchorEl(event.currentTarget)
-
-    setNewNotification(false)
   }
   const handleClose = () => {
     setAnchorEl(null)
@@ -78,6 +76,13 @@ function Notifications() {
     }
 
   }, [dispatch, currentUser._id])
+
+  useEffect(() => {
+    const hasPending = notifications?.some(
+      n => n.boardInvitation?.status === BOARD_INVITATION_STATUS.PENDING
+    )
+    setNewNotification(!!hasPending)
+  }, [notifications])
 
   const updateBoardInvitation = (status, invitationId) => {
     dispatch(updateBoardInvitationAPI({ status, invitationId }))
