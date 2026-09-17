@@ -14,24 +14,23 @@ import Button from '@mui/material/Button'
 import CancelIcon from '@mui/icons-material/Cancel'
 import IconButton from '@mui/material/IconButton'
 import { toast } from 'react-toastify'
-import { getArchivedCardsAPI, restoreCardAPI } from '~/apis'
+import { restoreCardAPI } from '~/apis'
 import { updateCardInBoard } from '~/redux/activeBoard/activeBoardSlice'
 import UnarchiveOutlinedIcon from '@mui/icons-material/UnarchiveOutlined'
 import Tooltip from '@mui/material/Tooltip'
 import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined'
 
-function ArchivedCards({ open, onClose, columnId }) {
+function ArchivedCards({ open, onClose, initialCards }) {
   const dispatch = useDispatch()
   const [cards, setCards] = useState([])
   const [selectedIds, setSelectedIds] = useState([])
 
   useEffect(() => {
-    if (open && columnId) {
-      setCards([])
+    if (open) {
+      setCards(initialCards)
       setSelectedIds([])
-      getArchivedCardsAPI(columnId).then(setCards)
     }
-  }, [open, columnId])
+  }, [open, initialCards])
 
   const isAllSelected = cards.length > 0 && selectedIds.length === cards.length
 
@@ -62,12 +61,18 @@ function ArchivedCards({ open, onClose, columnId }) {
   }
 
   return (
-    <Modal open={open} onClose={onClose}>
+    <Modal
+      open={open}
+      onClose={onClose}
+      sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+    >
       <Box sx={{
         position: 'relative',
-        width: 550,
-        maxWidth: 550,
-        height: 550,
+        width: 900,
+        maxWidth: 900,
+        minHeight: 280,
+        maxHeight: 'calc(100vh - 100px)',
+        overflowY: 'auto',
         display: 'flex',
         flexDirection: 'column',
         bgcolor: 'white',
@@ -75,7 +80,6 @@ function ArchivedCards({ open, onClose, columnId }) {
         borderRadius: '8px',
         outline: 0,
         padding: '20px',
-        margin: '50px auto',
         backgroundColor: (theme) => theme.palette.mode === 'dark' ? '#1A2027' : '#fff'
       }}>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
@@ -108,15 +112,15 @@ function ArchivedCards({ open, onClose, columnId }) {
         </Box>
 
         <TableContainer sx={{ flex: 1, overflowY: 'auto' }}>
-          <Table size="small" stickyHeader>
+          <Table size="small" stickyHeader sx={{ tableLayout: 'fixed', width: '100%' }}>
             <TableHead>
               <TableRow>
-                <TableCell padding="checkbox"/>
-                <TableCell>No.</TableCell>
-                <TableCell>Title</TableCell>
-                <TableCell>Cover</TableCell>
-                <TableCell>Date</TableCell>
-                <TableCell align="right">Action</TableCell>
+                <TableCell padding="checkbox" sx={{ width: '5%' }} />
+                <TableCell sx={{ width: '6%' }}>No.</TableCell>
+                <TableCell sx={{ width: '42%' }}>Title</TableCell>
+                <TableCell sx={{ width: '15%' }}>Cover</TableCell>
+                <TableCell sx={{ width: '22%' }}>Date</TableCell>
+                <TableCell align="right" sx={{ width: '10%' }}>Action</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -137,7 +141,7 @@ function ArchivedCards({ open, onClose, columnId }) {
                     />
                   </TableCell>
                   <TableCell>{index + 1}</TableCell>
-                  <TableCell sx={{ maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <TableCell sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {card.title}
                   </TableCell>
                   <TableCell>

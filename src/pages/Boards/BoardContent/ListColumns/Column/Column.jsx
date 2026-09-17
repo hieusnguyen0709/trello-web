@@ -22,7 +22,7 @@ import { CSS } from '@dnd-kit/utilities'
 import TextField from '@mui/material/TextField'
 import CloseIcon from '@mui/icons-material/Close'
 import { useConfirm } from 'material-ui-confirm'
-import { createNewCardAPI, deleteColumnDetailsAPI, updateColumnDetailsAPI } from '~/apis'
+import { createNewCardAPI, deleteColumnDetailsAPI, updateColumnDetailsAPI, getArchivedCardsAPI } from '~/apis'
 import {
   updateCurrentActiveBoard,
   selectCurrentActiveBoard
@@ -55,6 +55,7 @@ function Column({ column }) {
   }
 
   const [openArchivedCardsModal, setOpenArchivedCardsModal] = useState(false)
+  const [archivedCards, setArchivedCards] = useState([])
   const [anchorEl, setAnchorEl] = useState(null)
   const open = Boolean(anchorEl)
   const handleClick = (event) => {
@@ -62,6 +63,12 @@ function Column({ column }) {
   }
   const handleClose = () => {
     setAnchorEl(null)
+  }
+
+  const handleOpenArchivedCardsModal = async () => {
+    const cards = await getArchivedCardsAPI(column._id)
+    setArchivedCards(cards)
+    setOpenArchivedCardsModal(true)
   }
 
   const orderedCards = column.cards
@@ -206,7 +213,12 @@ function Column({ column }) {
                 <ListItemIcon><AddCardIcon className="add-card-icon" fontSize="small" /></ListItemIcon>
                 <ListItemText>Add new card</ListItemText>
               </MenuItem>
-              <MenuItem onClick={() => setOpenArchivedCardsModal(true)}>
+              <MenuItem
+                onClick={() => {
+                  handleClose()
+                  handleOpenArchivedCardsModal()
+                }}
+              >
                 <ListItemIcon><ArchiveOutlinedIcon fontSize="small" /></ListItemIcon>
                 <ListItemText>View archived cards</ListItemText>
               </MenuItem>
@@ -243,7 +255,7 @@ function Column({ column }) {
             <ArchivedCardsModal
               open={openArchivedCardsModal}
               onClose={() => setOpenArchivedCardsModal(false)}
-              columnId={column._id}
+              initialCards={archivedCards}
             />
           </Box>
         </Box>
